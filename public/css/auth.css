@@ -1,0 +1,236 @@
+.auth-page {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('../images/auth-bg.jpg') no-repeat center center;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-header {
+    padding: 20px 40px;
+}
+
+.auth-header .logo img {
+    height: 45px;
+    width: auto;
+}
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-box {
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 4px;
+    padding: 60px 68px 40px;
+    min-width: 380px;
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-box h1 {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    height: 50px;
+    padding: 16px 20px 0;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.form-group label {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #8c8c8c;
+    transition: all 0.1s ease;
+    pointer-events: none;
+}
+
+.form-group input:focus,
+.form-group input:not(:placeholder-shown) {
+    background-color: #454545;
+}
+
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+    top: 30%;
+    font-size: 11px;
+}
+
+.auth-button {
+    background-color: #e50914;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+    background-color: #f40612;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    color: #b3b3b3;
+    font-size: 13px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.help-link {
+    color: #b3b3b3;
+    text-decoration: none;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+.auth-footer {
+    margin-top: 60px;
+    color: #737373;
+    font-size: 13px;
+}
+
+.auth-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.captcha-text {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #8c8c8c;
+}
+
+.learn-more {
+    color: #0071eb;
+    text-decoration: none;
+}
+
+.learn-more:hover {
+    text-decoration: underline;
+}
+
+.auth-footer-main {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 30px 0;
+    margin-top: auto;
+}
+
+.auth-footer-main .footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.auth-footer-main p {
+    color: #737373;
+    margin-bottom: 20px;
+}
+
+.auth-footer-main .footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.auth-footer-main .footer-links a {
+    color: #737373;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.auth-footer-main .footer-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 740px) {
+    .auth-box {
+        min-width: 100%;
+        padding: 40px 20px;
+    }
+
+    .auth-header {
+        padding: 20px;
+    }
+
+    .auth-footer-main .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.input-error {
+    color: #e87c03;
+    font-size: 13px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.input-error i {
+    color: #e87c03;
+    font-size: 15px;
+}
+
+.form-group input.invalid {
+    border: 1px solid #e87c03 !important;
+    background-color: #2d0d0d;
+}
+
+.warning-box {
+    background: #ffb900;
+    color: #111;
+    padding: 18px 20px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    font-size: 16px;
+    font-weight: 500;
+    display: none;
+}
+
+.warning-box.active {
+    display: block;
+} 

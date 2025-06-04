@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFlix - Sign Up</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+    <header class="auth-header">
+        <div class="logo">
+            <a href="/">
+                <img src="assets/images/Nflix-logo.png" alt="NFlix Logo">
+            </a>
+        </div>
+    </header>
+    <main class="auth-container">
+        <div class="auth-box">
+            <div class="warning-box" id="registerWarning"></div>
+            <h1>Sign Up</h1>
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <input type="text" id="name" required>
+                    <label for="name">Name</label>
+                    <div class="input-error" id="nameError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" required>
+                    <label for="email">Email</label>
+                    <div class="input-error" id="emailError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" required>
+                    <label for="password">Password</label>
+                    <div class="input-error" id="passwordError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirmPassword" required>
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-error" id="confirmPasswordError"></div>
+                </div>
+                <button type="submit" class="auth-button">Sign Up</button>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login.html">Sign in</a>.</p>
+                <p class="captcha-text">
+                    This page is protected by Google reCAPTCHA to ensure you're not a bot. 
+                    <a href="#" class="learn-more">Learn more.</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="auth-footer-main">
+        <div class="footer-content">
+            <p>Questions? Call 1-800-NFLIX</p>
+            <div class="footer-links">
+                <a href="#">FAQ</a>
+                <a href="#">Help Center</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Privacy</a>
+                <a href="#">Cookie Preferences</a>
+                <a href="#">Corporate Information</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+</body>
+</html> 

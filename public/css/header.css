@@ -1,0 +1,121 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    padding: 1rem 0;
+    transition: background-color 0.3s ease;
+}
+
+.header.scrolled {
+    background-color: #000;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo img {
+    height: 25px;
+    width: auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: 2rem;
+}
+
+.nav-links a {
+    color: #e5e5e5;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #fff;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-btn,
+.notifications-btn {
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+}
+
+.profile-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-menu img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+}
+
+.profile-menu i {
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.login-btn, .signup-btn {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 7px 17px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.login-btn {
+    background-color: transparent;
+    border: 1px solid #fff;
+}
+
+.signup-btn {
+    background-color: #e50914;
+    border: 1px solid #e50914;
+}
+
+.login-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.signup-btn:hover {
+    background-color: #f40612;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .nav-container {
+        padding: 0 10px;
+    }
+
+    .profile-menu {
+        gap: 0.5rem;
+    }
+    
+    .login-btn, .signup-btn {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+} 
