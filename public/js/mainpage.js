@@ -91,3 +91,26 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Load default content
+  loadMovies('moviesGrid');
+  loadMovies('trendingGrid');
+  loadMovies('tvshowsGrid');
+
+  // Handle Start Watching button
+  const startBtn = document.getElementById('startWatchingBtn');
+  if (startBtn) {
+    startBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.getElementById('movies');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+
+        // Optionally reload recommended movies
+        loadMovies('moviesGrid', 'all'); // You can modify this to load only a specific set
+      }
+    });
+  }
+});
+
+

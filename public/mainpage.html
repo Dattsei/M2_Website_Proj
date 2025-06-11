@@ -12,9 +12,9 @@
     <header class="header" id="header">
         <nav class="nav-container">
             <div class="logo">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60' fill='%23e50914'><rect width='200' height='60' rx='8' fill='%23e50914'/><text x='100' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'>NFlix</text></svg>" alt="NFlix Logo">
-            </div>
-
+    <img src="public\images\nstream.png" 
+    alt="NFlix Logo" class="logo-img">
+</div>
             <ul class="nav-links">
              <li><a href="#home" class="active">Home</a></li>
              <li><a href="#movies">Movies</a></li>
@@ -29,9 +29,6 @@
                     </a>
                 <button class="search-btn" onclick="toggleSearch()">
                     <i class="fas fa-search"></i>
-                </button>
-                <button class="notifications-btn">
-                    <i class="fas fa-bell"></i>
                 </button>
                 <div class="profile-menu">
                     <button class="profile-btn" onclick="toggleProfile()">
@@ -57,10 +54,10 @@
             <h1>Stream Without Limits</h1>
             <p>Discover thousands of movies and TV shows. Watch anywhere, anytime.</p>
             <div class="cta-buttons">
-                <a href="#" class="cta-btn primary">
+                <a href="#movies" class="cta-btn primary" id="startWatchingBtn">
                     <i class="fas fa-play"></i>
                     Start Watching
-                </a>
+                    </a>
                 <a href="#" class="cta-btn secondary">
                     <i class="fas fa-info-circle"></i>
                     Learn More
