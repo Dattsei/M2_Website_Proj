@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFlix - Watch Movies & TV Shows</title>
+    <link rel="stylesheet" href="css/mainpage.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60' fill='%23e50914'><rect width='200' height='60' rx='8' fill='%23e50914'/><text x='100' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'>NFlix</text></svg>" alt="NFlix Logo">
+            </div>
+
+            <ul class="nav-links">
+             <li><a href="#home" class="active">Home</a></li>
+             <li><a href="#movies">Movies</a></li>
+             <li><a href="#tvshows">TV Shows</a></li>
+             <li><a href="#trending">Trending</a></li>
+            </li>
+    <li><a href="admin.html">Admin</a></li>
+</ul>  
+            <div class="nav-right">
+                <a href="favorites.html" class="active" title="Favorites">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                <button class="search-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="notifications-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="profile-menu">
+                    <button class="profile-btn" onclick="toggleProfile()">
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search movies, TV shows..." onkeyup="performSearch(this.value)">
+            <button onclick="toggleSearch()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sections -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Stream Without Limits</h1>
+            <p>Discover thousands of movies and TV shows. Watch anywhere, anytime.</p>
+            <div class="cta-buttons">
+                <a href="#" class="cta-btn primary">
+                    <i class="fas fa-play"></i>
+                    Start Watching
+                </a>
+                <a href="#" class="cta-btn secondary">
+                    <i class="fas fa-info-circle"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <!-- Categories -->
+        <section class="content-section">
+            <div class="categories">
+                <button class="category-btn active" onclick="filterContent('all')">All</button>
+                <button class="category-btn" onclick="filterContent('action')">Action</button>
+                <button class="category-btn" onclick="filterContent('drama')">Drama</button>
+                <button class="category-btn" onclick="filterContent('comedy')">Comedy</button>
+                <button class="category-btn" onclick="filterContent('sci-fi')">Sci-Fi</button>
+                <button class="category-btn" onclick="filterContent('horror')">Horror</button>
+                <button class="category-btn" onclick="filterContent('romance')">Romance</button>
+                <button class="category-btn" onclick="filterContent('thriller')">Thriller</button>
+                <button class="category-btn" onclick="filterContent('animation')">Animation</button>
+            </div>
+        </section>
+
+        <!-- Trending Section -->
+        <section id="trending" class="content-section">
+            <h2 class="section-title">🔥 Trending Now</h2>
+            <div class="movie-grid" id="trendingGrid">
+                <!-- Movies will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Movies Section -->
+        <section id="movies" class="content-section">
+            <h2 class="section-title">🎬 Popular Movies</h2>
+            <div class="movie-grid" id="moviesGrid">
+                <!-- Movies will be loaded here -->
+            </div>
+        </section>
+
+        <!-- TV Shows Section -->
+        <section id="tvshows" class="content-section">
+            <h2 class="section-title">📺 TV Shows</h2>
+            <div class="movie-grid" id="tvshowsGrid">
+                <!-- TV Shows will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/mainpage.js"></script>
+</body>
+</html>

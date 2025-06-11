@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Favorites - NFlix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/mainpage.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <nav class="nav-container">
+      <div class="logo">
+        <a href="index.html#home">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60' fill='%23e50914'><rect width='200' height='60' rx='8' fill='%23e50914'/><text x='100' y='40' text-anchor='middle' fill='white' font-size='24' font-weight='bold'>NFlix</text></svg>" alt="NFlix Logo">
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="mainpage.html#home">Home</a></li>
+        <li><a href="index.html#movies">Movies</a></li>
+        <li><a href="index.html#tvshows">TV Shows</a></li>
+        <li><a href="index.html#trending">Trending</a></li>
+        <li><a href="favorites.html" class="active" title="Favorites"><i class="fas fa-heart"></i></a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Favorites Content -->
+  <main>
+    <section class="content-section">
+      <h2 class="section-title">❤️ Your Favorites</h2>
+      <div class="movie-grid" id="favoritesGrid">
+        <p>No favorites added yet.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
