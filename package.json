@@ -1,7 +1,7 @@
 {
-  "name": "nflix",
+  "name": "NStream",
   "version": "1.0.0",
-  "description": "NFlix",
+  "description": "NStream  ",
   "main": "index.js",
   "scripts": {
     "start": "live-server public",
