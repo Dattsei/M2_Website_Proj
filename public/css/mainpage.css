@@ -3,13 +3,14 @@
     padding: 0;
     box-sizing: border-box;
 }
-
 html {
   scroll-behavior: smooth;
 }
-.logo-img {
-    height: 40px; /* adjust as needed */
-    object-fit: contain;
+.logo img {
+    height: auto; /* Increase as needed */
+    filter: brightness(0) saturate(100%) invert(27%) sepia(86%) saturate(6715%) hue-rotate(357deg) brightness(92%) contrast(93%);
+    width: auto;
+
 }
 body {
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
