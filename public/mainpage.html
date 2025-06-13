@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFlix - Watch Movies & TV Shows</title>
+    <title>Nstream - Watch Movies & TV Shows</title>
     <link rel="stylesheet" href="css/mainpage.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
             <div class="logo">
-    <img src="public/images/logo.png" alt="NFlix Logo" class="logo-img">
-</div>
+                <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
+            </div>
             <ul class="nav-links">
-             <li><a href="#home" class="active">Home</a></li>
-             <li><a href="#movies">Movies</a></li>
-             <li><a href="#tvshows">TV Shows</a></li>
-             <li><a href="#trending">Trending</a></li>
-            </li>
-    <li><a href="admin.html">Admin</a></li>
-</ul>  
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#movies">Movies</a></li>
+                <li><a href="#tvshows">TV Shows</a></li>
+                <li><a href="#trending">Trending</a></li>
+                </li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
             <div class="nav-right">
                 <a href="favorites.html" class="active" title="Favorites">
-                        <i class="fas fa-heart"></i>
-                    </a>
+                    <i class="fas fa-heart"></i>
+                </a>
                 <button class="search-btn" onclick="toggleSearch()">
                     <i class="fas fa-search"></i>
                 </button>
@@ -40,8 +42,10 @@
     <!-- Search Overlay -->
     <div class="search-overlay" id="searchOverlay">
         <div class="search-box">
-            <input type="text" class="search-input" placeholder="Search movies, TV shows..." onkeyup="performSearch(this.value)">
-            <button onclick="toggleSearch()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
+            <input type="text" class="search-input" placeholder="Search movies, TV shows..."
+                onkeyup="performSearch(this.value)">
+            <button onclick="toggleSearch()"
+                style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -56,7 +60,7 @@
                 <a href="#movies" class="cta-btn primary" id="startWatchingBtn">
                     <i class="fas fa-play"></i>
                     Start Watching
-                    </a>
+                </a>
                 <a href="#" class="cta-btn secondary">
                     <i class="fas fa-info-circle"></i>
                     Learn More
@@ -108,4 +112,5 @@
 
     <script src="js/mainpage.js"></script>
 </body>
+
 </html>
