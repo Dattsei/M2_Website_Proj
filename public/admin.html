@@ -4,457 +4,231 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NStream Admin Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-    .modal-scroll {
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    </style>
+<link rel="stylesheet" href="css/admin.css">
 </head>
-<body class="bg-gray-950 text-white">
-  <div class="md:flex min-h-screen">
+
+<body>
+  <div class="admin-container">
     <!-- Sidebar for desktop -->
-    <aside class="hidden md:block w-64 bg-red-800 p-4 space-y-4">
-      <h1 class="text-2xl font-bold text-white">NStream Admin</h1>
-      <nav class="space-y-2">
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('dashboard')">Dashboard</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('content')">Manage Content</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('users')">Manage Users</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('subscriptions')">Subscriptions</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('reviews')">Reviews</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('analytics')">Analytics</a>
-        <a href="#" class="block p-2 rounded hover:bg-red-700" onclick="showSection('notifications')">Send Notifications</a>
-        <a href="index.html" class="block p-2 rounded hover:bg-red-700 text-yellow-300">Logout</a>
+    <aside class="sidebar desktop">
+      <h1 class="title">NStream Admin</h1>
+      <nav class="nav-links">
+        <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+        <a href="#" onclick="showSection('content')">Manage Content</a>
+        <a href="#" onclick="showSection('users')">Manage Users</a>
+        <a href="#" onclick="showSection('subscriptions')">Subscriptions</a>
+        <a href="#" onclick="showSection('reviews')">Reviews</a>
+        <a href="#" onclick="showSection('analytics')">Analytics</a>
+        <a href="index.html" class="logout">Logout</a>
       </nav>
     </aside>
 
     <!-- Mobile Dropdown -->
-    <div class="md:hidden w-full bg-red-800 p-4 space-y-2">
-      <h1 class="text-2xl font-bold text-white">NStream Admin</h1>
-      <label for="mobile-nav" class="block text-white">Select Section:</label>
-      <select id="mobile-nav" class="w-full text-black p-2 rounded" onchange="showSection(this.value)">
+    <div class="sidebar mobile">
+      <h1 class="title">NStream Admin</h1>
+      <label for="mobile-nav">Select Section:</label>
+      <select id="mobile-nav" onchange="showSection(this.value)">
         <option value="dashboard">Dashboard</option>
         <option value="content">Manage Content</option>
         <option value="users">Manage Users</option>
         <option value="subscriptions">Subscriptions</option>
         <option value="reviews">Reviews</option>
         <option value="analytics">Analytics</option>
-        <option value="notifications">Send Notifications</option>
       </select>
-      <a href="index.html" class="block w-full text-center bg-yellow-400 text-black font-semibold p-2 rounded hover:bg-yellow-300">Logout</a>
+      <a href="index.html" class="logout-btn">Logout</a>
     </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-6 overflow-y-auto">
-      <!-- Dashboard -->
-      <div id="dashboard" class ="hidden">
-        <h2 class="text-xl font-semibold mb-4">Welcome, Admin</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <div class="bg-red-700 p-4 rounded shadow">
-            <h3 class="text-lg font-medium">Total Users</h3>
-            <p class="text-2xl" id="userCount">0</p>
-          </div>
-          <div class="bg-red-700 p-4 rounded shadow">
-            <h3 class="text-lg font-medium">Active Subscriptions</h3>
-            <p class="text-2xl" id="subCount">0</p>
-          </div>
-          <div class="bg-red-700 p-4 rounded shadow">
-            <h3 class="text-lg font-medium">Movies/Shows</h3>
-            <p class="text-2xl" id="contentCount">0</p>
-          </div>
+  <!-- Main Content -->
+  <main>
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+      <h2 class="dashboard-title">Welcome, Admin</h2>
+      <div class="dashboard-grid">
+        <div class="dashboard-box">
+          <h3>Total Users</h3>
+          <p id="userCount">0</p>
+        </div>
+        <div class="dashboard-box">
+          <h3>Active Subscriptions</h3>
+          <p id="subCount">0</p>
+        </div>
+        <div class="dashboard-box">
+          <h3>Movies/Shows</h3>
+          <p id="contentCount">0</p>
         </div>
       </div>
+    </div>
 
-      <!-- Manage Content (start hidden) -->
-      <div id="content" class="hidden">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Manage Content</h3>
-          <button onclick="openMovieModal()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">+ Add Movie</button>
-        </div>
-        <table class="min-w-full table-auto text-left text-sm">
-          <thead class="bg-red-700">
-            <tr>
-              <th class="p-2">Title</th>
-              <th class="p-2">Genres</th>
-              <th class="p-2">Release Date</th>
-              <th class="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-gray-800" id="contentTable"></tbody>
-        </table>
+    <!-- Manage Content -->
+    <div id="content" class="hidden">
+      <div class="content-header">
+        <h3>Manage Content</h3>
+        <button onclick="openMovieModal()" class="btn-add">+ Add Movie</button>
       </div>
+      <table class="content-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Genres</th>
+            <th>Release Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="contentTable"></tbody>
+      </table>
+    </div>
 
-      <!-- Upload/Edit Modal -->
-      <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
-        <div class="modal-scroll bg-gray-900 p-6 rounded shadow-lg w-full max-w-lg space-y-4">
-          <h3 class="text-xl font-bold text-red-500" id="modalTitle">Upload New Movie</h3>
-          <form id="movieForm" onsubmit="submitMovie(event)" class="space-y-3">
-            <input type="hidden" id="movieId">
+    <!-- Upload/Edit Modal -->
+    <div id="uploadModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="modalTitle">Upload New Movie</h3>
+        <form id="movieForm" onsubmit="submitMovie(event)">
+          <input type="hidden" id="movieId">
 
+          <label for="movieTitle">Title</label>
+          <input type="text" id="movieTitle" placeholder="Title" required>
+
+          <label for="movieDesc">Description</label>
+          <textarea id="movieDesc" placeholder="Description" required></textarea>
+
+          <label>Select Genres</label>
+          <div id="genreButtons" class="genre-buttons"></div>
+          <input type="hidden" id="genreList" required>
+          <p id="selectedGenres" class="selected-genres hidden"></p>
+
+          <label for="movieRating">Parental Rating</label>
+          <select id="movieRating" required>
+            <option value="G">G</option>
+            <option value="PG">PG</option>
+            <option value="PG-13">PG-13</option>
+            <option value="R">R</option>
+            <option value="18+">18+</option>
+          </select>
+
+          <label for="posterImage">Poster Image</label>
+          <input type="file" id="posterImage" accept="image/*">
+          <div id="posterPreview" class="poster-preview hidden">
+            <img src="" alt="Poster Preview">
+            <button type="button" onclick="clearPoster()">Remove Poster</button>
+          </div>
+
+          <label for="videoLink">Video Link or ID</label>
+          <input type="text" id="videoLink" placeholder="Video Link or ID" required>
+
+          <label for="releaseDate">Release Date</label>
+          <input type="date" id="releaseDate" required>
+
+          <div class="form-actions">
+            <button type="button" onclick="clearForm()" class="clear-btn">Clear All</button>
             <div>
-              <label class="block mb-1">Title</label>
-              <input type="text" id="movieTitle" placeholder="Title" class="w-full p-2 rounded text-black" required>
+              <button type="button" onclick="toggleUploadModal(false)" class="cancel-btn">Cancel</button>
+              <button type="submit" class="save-btn">Save</button>
             </div>
-
-            <div>
-              <label class="block mb-1">Description</label>
-              <textarea id="movieDesc" placeholder="Description" class="w-full p-2 rounded text-black" required></textarea>
-            </div>
-
-            <div>
-              <label class="block mb-1">Select Genres</label>
-              <div id="genreButtons" class="flex flex-wrap gap-2 mb-2"></div>
-              <input type="hidden" id="genreList" required>
-              <p id="selectedGenres" class="mt-2 text-sm text-green-300 hidden"></p>
-            </div>
-
-            <div>
-              <label class="block mb-1">Parental Rating</label>
-              <select id="movieRating" class="w-full p-2 rounded text-black" required>
-                <option value="G">G</option>
-                <option value="PG">PG</option>
-                <option value="PG-13">PG-13</option>
-                <option value="R">R</option>
-                <option value="18+">18+</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block mb-1">Poster Image</label>
-              <input type="file" id="posterImage" accept="image/*" class="block w-full text-black bg-white p-1 rounded">
-              <div id="posterPreview" class="mt-2 hidden">
-                <img src="" alt="Poster Preview" class="w-full max-h-60 object-contain rounded">
-                <button type="button" onclick="clearPoster()" class="mt-2 text-sm text-red-400 hover:underline">Remove Poster</button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block mb-1">Video Link or ID</label>
-              <input type="text" id="videoLink" placeholder="Video Link or ID" class="w-full p-2 rounded text-black" required>
-            </div>
-
-            <div>
-              <label class="block mb-1">Release Date</label>
-              <input type="date" id="releaseDate" class="w-full p-2 rounded text-black" required>
-            </div>
-
-            <div class="flex justify-between items-center">
-              <button type="button" onclick="clearForm()" class="text-yellow-400 hover:underline">Clear All</button>
-              <div class="space-x-2">
-                <button type="button" onclick="toggleUploadModal(false)" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">Save</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Manage Users -->
-      <div id="users" class="hidden">
-        <h3 class="text-lg font-semibold mb-2">Manage Users</h3>
-        <table class="min-w-full table-auto text-left text-sm">
-          <thead class="bg-red-700">
-            <tr>
-              <th class="p-2">Name</th>
-              <th class="p-2">Email</th>
-              <th class="p-2">Status</th>
-            </tr>
-          </thead>
-          <tbody class="bg-gray-800">
-            <tr><td class="p-2">Ramon Fuentes</td><td class="p-2">ramon@example.com</td><td class="p-2">Active</td></tr>
-            <tr><td class="p-2">Davil Axl Andoy</td><td class="p-2">davil@example.com</td><td class="p-2">Active</td></tr>
-            <tr><td class="p-2">Vincent Jade Datiles</td><td class="p-2">vincent@example.com</td><td class="p-2">Suspended</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Subscriptions -->
-      <div id="subscriptions" class="hidden">
-        <h3 class="text-lg font-semibold mb-2">Subscriptions</h3>
-        <table class="min-w-full table-auto text-left text-sm">
-          <thead class="bg-red-700">
-            <tr>
-              <th class="p-2">User</th>
-              <th class="p-2">Plan</th>
-              <th class="p-2">Status</th>
-            </tr>
-          </thead>
-          <tbody class="bg-gray-800">
-            <tr><td class="p-2">Ramon</td><td class="p-2">Monthly</td><td class="p-2">Active</td></tr>
-            <tr><td class="p-2">Davil</td><td class="p-2">Yearly</td><td class="p-2">Expiring Soon</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Reviews -->
-      <div id="reviews" class="hidden">
-        <h3 class="text-lg font-semibold mb-2">Reviews</h3>
-        <table class="min-w-full table-auto text-left text-sm">
-          <thead class="bg-red-700">
-            <tr>
-              <th class="p-2">Movie</th>
-              <th class="p-2">Rating</th>
-              <th class="p-2">Comment</th>
-              <th class="p-2">Action</th>
-            </tr>
-          </thead>
-          <tbody class="bg-gray-800">
-            <tr><td class="p-2">Inception</td><td class="p-2">5 Stars</td><td class="p-2">Mind-blowing movie!</td><td class="p-2"><button class="text-red-400">Delete</button></td></tr>
-            <tr><td class="p-2">Frozen</td><td class="p-2">4 Stars</td><td class="p-2">Great for kids.</td><td class="p-2"><button class="text-red-400">Delete</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Analytics -->
-      <div id="analytics" class="hidden">
-        <h3 class="text-lg font-semibold mb-2">Analytics</h3>
-        <table class="min-w-full table-auto text-left text-sm">
-          <thead class="bg-red-700">
-            <tr>
-              <th class="p-2">Category</th>
-              <th class="p-2">Data</th>
-            </tr>
-          </thead>
-          <tbody class="bg-gray-800">
-            <tr><td class="p-2">Most Watched</td><td class="p-2">Inception, Stranger Things</td></tr>
-            <tr><td class="p-2">Peak Hours</td><td class="p-2">8PM - 11PM</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Notifications -->
-      <div id="notifications" class="hidden">
-        <h3 class="text-lg font-semibold mb-2">Send Notifications</h3>
-        <form class="space-y-2">
-          <input type="text" placeholder="Title" class="w-full p-2 rounded text-black">
-          <textarea placeholder="Message..." class="w-full p-2 rounded text-black"></textarea>
-          <button type="submit" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Send</button>
+          </div>
         </form>
       </div>
-    </main>
-  </div>
+    </div>
 
-  <script>
+    <!-- Manage Users -->
+    <div id="users" class="hidden">
+      <h3 class="section-title">Manage Users</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTable">
+          <!-- JS will populate here -->
+        </tbody>
+      </table>
+    </div>
 
-    window.onload = () => {
-    showSection('dashboard');
-  };
+    <div id="userModal" class="user-modal user-modal-hidden">
+      <div class="modal-content">
+        <h3>Edit User</h3>
+        <form id="userForm" onsubmit="submitUserEdit(event)">
+          <input type="hidden" id="editUserIndex">
+          <label>Email:<input type="email" id="editUserEmail" required></label>
+          <label>Full Name:<input type="text" id="editUserName" required></label>
+          <label>Address:<input type="text" id="editUserAddress" required></label>
+          <label>Phone Number:<input type="text" id="editUserPhone" required></label>
+          <label>Status:
+            <select id="editUserStatus">
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </label>
+          <label>Subscribed:
+            <select id="editUserSubscribed">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+          <div class="modal-actions">
+            <button type="button" onclick="toggleUserModal(false)">Cancel</button>
+            <button type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-  function showSection(id) {
-    document.querySelectorAll('main > div').forEach(section => {
-      section.classList.add('hidden');
-    });
-    document.getElementById(id).classList.remove('hidden');
+    <!-- Subscriptions -->
+    <div id="subscriptions" class="hidden">
+      <h3 class="section-title">Subscriptions</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Plan</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ramon</td><td>Monthly</td><td>Active</td></tr>
+          <tr><td>Davil</td><td>Yearly</td><td>Expiring Soon</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-    const dropdown = document.getElementById('mobile-nav');
-    if (dropdown) dropdown.value = id;
-  }
-    
-      const genreSet = new Set();
-    const genreOptions = ["Action", "Drama", "Sci-Fi", "Romance", "Comedy", "Horror", "Thriller", "Fantasy", "Adventure", "Mystery", "Documentary", "Animation", "Family"];
-    let movieList = [];
-    let posterBase64 = "";
+    <!-- Reviews -->
+    <div id="reviews" class="hidden">
+      <h3 class="section-title">Reviews</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Movie</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Inception</td><td>5 Stars</td><td>Mind-blowing movie!</td><td><button class="btn-delete">Delete</button></td></tr>
+          <tr><td>Frozen</td><td>4 Stars</td><td>Great for kids.</td><td><button class="btn-delete">Delete</button></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-    function openMovieModal(movie = null, index = null) {
-      toggleUploadModal(true);
-      document.getElementById("movieForm").reset();
-      genreSet.clear();
-      posterBase64 = "";
-      document.getElementById("posterPreview").classList.add("hidden");
-      document.getElementById("movieId").value = index !== null ? index : "";
-      document.getElementById("modalTitle").textContent = movie ? "Edit Movie" : "Upload New Movie";
-
-      if (movie) {
-        document.getElementById("movieTitle").value = movie.title;
-        document.getElementById("movieDesc").value = movie.description;
-        document.getElementById("movieRating").value = movie.rating;
-        document.getElementById("videoLink").value = movie.video;
-        document.getElementById("releaseDate").value = movie.release;
-        genreSet.clear();
-        movie.genres.forEach(g => genreSet.add(g));
-        document.getElementById("genreList").value = movie.genres.join(", ");
-        updateSelectedGenres();
-
-        if (movie.poster) {
-          posterBase64 = movie.poster;
-          const preview = document.getElementById("posterPreview");
-          preview.querySelector("img").src = posterBase64;
-          preview.classList.remove("hidden");
-        }
-      }
-
-      renderGenreButtons();
-    }
-
-    function toggleUploadModal(state) {
-      document.getElementById("uploadModal").classList.toggle("hidden", !state);
-    }
-
-    function renderGenreButtons() {
-      const container = document.getElementById("genreButtons");
-      container.innerHTML = "";
-      genreOptions.forEach(genre => {
-        const selected = genreSet.has(genre);
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = (selected ? "✓ " : "+ ") + genre;
-        btn.className = `genre-btn ${selected ? 'bg-green-600' : 'bg-gray-700'} text-white px-2 py-1 rounded hover:bg-red-700`;
-        btn.onclick = () => toggleGenre(genre);
-        container.appendChild(btn);
-      });
-      updateSelectedGenres();
-    }
-
-    function toggleGenre(genre) {
-      if (genreSet.has(genre)) genreSet.delete(genre);
-      else genreSet.add(genre);
-      renderGenreButtons();
-    }
-
-    function updateSelectedGenres() {
-      const selected = [...genreSet];
-      const text = document.getElementById("selectedGenres");
-      if (selected.length) {
-        text.textContent = "Selected: " + selected.join(", ");
-        text.classList.remove("hidden");
-      } else {
-        text.textContent = "";
-        text.classList.add("hidden");
-      }
-      document.getElementById("genreList").value = selected.join(", ");
-    }
-
-    function clearPoster() {
-      posterBase64 = "";
-      document.getElementById("posterImage").value = "";
-      document.getElementById("posterPreview").classList.add("hidden");
-    }
-
-    function clearForm() {
-      if (confirm("Are you sure you want to clear all inputs?")) {
-        document.getElementById("movieForm").reset();
-        genreSet.clear();
-        posterBase64 = "";
-        document.getElementById("posterPreview").classList.add("hidden");
-        renderGenreButtons();
-        updateSelectedGenres();
-      }
-    }
-
-    document.getElementById("posterImage").addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          posterBase64 = e.target.result;
-          const preview = document.getElementById("posterPreview");
-          preview.querySelector("img").src = posterBase64;
-          preview.classList.remove("hidden");
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    function submitMovie(event) {
-      event.preventDefault();
-
-      const movie = {
-        title: document.getElementById("movieTitle").value,
-        description: document.getElementById("movieDesc").value,
-        rating: document.getElementById("movieRating").value,
-        genres: [...genreSet],
-        video: document.getElementById("videoLink").value,
-        release: document.getElementById("releaseDate").value,
-        poster: posterBase64,
-      };
-
-      const id = document.getElementById("movieId").value;
-      if (id !== "") movieList[id] = movie;
-      else movieList.push(movie);
-
-      refreshTable();
-      toggleUploadModal(false);
-    }
-
-    function refreshTable() {
-      const tbody = document.getElementById("contentTable");
-      tbody.innerHTML = "";
-      movieList.forEach((movie, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td class="p-2">${movie.title}</td>
-          <td class="p-2">${movie.genres.join(', ')}</td>
-          <td class="p-2">${movie.release}</td>
-          <td class="p-2">
-            <button class="text-blue-400 hover:underline" onclick='openMovieModal(${JSON.stringify(movie)}, ${index})'>Edit</button>
-            <button class="text-red-400 hover:underline ml-2" onclick='deleteMovie(${index})'>Delete</button>
-          </td>`;
-        tbody.appendChild(row);
-      });
-    }
-
-    function deleteMovie(index) {
-      if (confirm("Are you sure you want to delete this movie?")) {
-        movieList.splice(index, 1);
-        refreshTable();
-      }
-    }
-
-    window.onload = () => showSection('dashboard');
-    function showSection(id) {
-      document.querySelectorAll('main > div').forEach(section => section.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      const dropdown = document.getElementById('mobile-nav');
-      if (dropdown) dropdown.value = id;
-    }
-
-    const data = {
-      users: 1204,
-      subscriptions: 878,
-      content: [
-        { title: 'Inception', genre: 'Sci-Fi', maturity: 'PG-13' },
-        { title: 'Finding Nemo', genre: 'Animation', maturity: 'G' }
-      ]
-    };
-
-    document.getElementById('userCount').textContent = data.users;
-    document.getElementById('subCount').textContent = data.subscriptions;
-    document.getElementById('contentCount').textContent = data.content.length;
-
-    const table = document.getElementById('contentTable');
-    table.innerHTML = '';
-    data.content.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="p-2">${item.title}</td>
-        <td class="p-2">${item.genre}</td>
-        <td class="p-2">${item.maturity}</td>
-        <td class="p-2">
-          <button class="text-blue-400 hover:underline" onclick="editItem(${index})">Edit</button>
-          <button class="text-red-400 hover:underline ml-2" onclick="deleteItem(${index})">Delete</button>
-        </td>`;
-      table.appendChild(row);
-    });
-
-    function showSection(id) {
-      document.querySelectorAll('main > div').forEach(section => section.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      const dropdown = document.getElementById('mobile-nav');
-      if (dropdown) dropdown.value = id;
-    }
-
-    function editItem(index) {
-      alert(`Edit content: ${data.content[index].title}`);
-    }
-
-    function deleteItem(index) {
-      const confirmDelete = confirm(`Delete content: ${data.content[index].title}?`);
-      if (confirmDelete) {
-        data.content.splice(index, 1);
-        location.reload();
-      }
-    }
-  </script>
+    <!-- Analytics -->
+    <div id="analytics" class="hidden">
+      <h3 class="section-title">Analytics</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Most Watched</td><td>Inception, Stranger Things</td></tr>
+          <tr><td>Peak Hours</td><td>8PM - 11PM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  
+  <script src="js/admin.js" defer></script>
 </body>
 </html>
