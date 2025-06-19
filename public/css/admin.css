@@ -126,18 +126,6 @@ main {
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 640px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .dashboard-box {
   background-color: #b91c1c;
   padding: 1rem;
@@ -194,8 +182,6 @@ main {
 .content-table tbody {
   background-color: #1f2937;
 }
-
-
 
 /* Modal Overlay */
 .modal {
@@ -320,12 +306,6 @@ main {
   background-color: #b91c1c;
 }
 
-
-
-.hidden {
-  display: none;
-}
-
 .section-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -367,9 +347,6 @@ main {
 .btn-delete:hover {
   text-decoration: underline;
 }
-
-
-
 
 .hidden {
   display: none;
@@ -460,3 +437,131 @@ main {
 }
 
 
+@media (max-width: 639px) {
+  /* Sidebar Mobile */
+  .sidebar.mobile {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  /* Select Dropdown */
+  .sidebar.mobile select#mobile-nav {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    box-sizing: border-box;
+    border: none;
+    appearance: none;
+    background-color: white;
+    color: black;
+  }
+
+  /* Ensure options don't overflow */
+  .sidebar.mobile select#mobile-nav option {
+    white-space: normal;
+    word-wrap: break-word;
+  }
+
+  /* Logout Button */
+  .sidebar.mobile .logout-btn {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+    background-color: #facc15;
+    color: black;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Modals */
+  .modal-content,
+  .user-modal .modal-content {
+    width: 90%;
+    max-width: none;
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .modal-content label,
+  .user-modal .modal-content label {
+    font-size: 0.85rem;
+  }
+
+  .modal-content input,
+  .modal-content textarea,
+  .modal-content select {
+    font-size: 0.85rem;
+  }
+
+  /* Form actions */
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .form-actions button,
+  .form-actions .save-btn,
+  .form-actions .cancel-btn,
+  .form-actions .clear-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Content header layout */
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Add button full width */
+  .btn-add {
+    width: 100%;
+  }
+}
+
+
+/* 🖥 Tablet and up (existing) */
+@media (min-width: 640px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 🖥 Standard desktop and up */
+@media (min-width: 768px) {
+  .admin-container {
+    flex-direction: row; 
+  }
+
+  .sidebar.desktop {
+    display: block;
+    width: 250px;
+    background-color: #991b1b;
+    padding: 1rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar.mobile {
+    display: none;
+  }
+}
+
+/* 🖥 Large screens */
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

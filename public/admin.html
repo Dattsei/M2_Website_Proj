@@ -69,7 +69,7 @@
         <thead>
           <tr>
             <th>Title</th>
-            <th>Genres</th>
+            <th>Type</th>
             <th>Release Date</th>
             <th>Actions</th>
           </tr>
@@ -81,15 +81,25 @@
     <!-- Upload/Edit Modal -->
     <div id="uploadModal" class="modal hidden">
       <div class="modal-content">
-        <h3 id="modalTitle">Upload New Movie</h3>
+        <h3 id="modalTitle">Upload</h3>
         <form id="movieForm" onsubmit="submitMovie(event)">
           <input type="hidden" id="movieId">
+
+          <!-- Type First -->
+          <label for="contentType">Type</label>
+          <select id="contentType" onchange="toggleEpisodeButton()" required>
+            <option value="Movie">Movie</option>
+            <option value="Series">Series</option>
+          </select>
 
           <label for="movieTitle">Title</label>
           <input type="text" id="movieTitle" placeholder="Title" required>
 
           <label for="movieDesc">Description</label>
           <textarea id="movieDesc" placeholder="Description" required></textarea>
+
+          <label for="studio">Studio</label>
+          <input type="text" id="studio" placeholder="Studio" required>
 
           <label>Select Genres</label>
           <div id="genreButtons" class="genre-buttons"></div>
@@ -112,11 +122,25 @@
             <button type="button" onclick="clearPoster()">Remove Poster</button>
           </div>
 
-          <label for="videoLink">Video Link or ID</label>
-          <input type="text" id="videoLink" placeholder="Video Link or ID" required>
+          <!-- Trailer for Movie and Series -->
+          <label for="trailerLink">Trailer Video</label>
+          <input type="text" id="trailerLink" placeholder="Trailer Video Link or ID" required>
+
+          <!-- Main Video for Movie only -->
+          <div id="movieVideoField">
+            <label for="videoLink">Video Link or ID</label>
+            <input type="text" id="videoLink" placeholder="Video Link or ID">
+          </div>
 
           <label for="releaseDate">Release Date</label>
           <input type="date" id="releaseDate" required>
+
+          <!-- Episode management link -->
+          <div id="episodeManagerBtn" class="hidden">
+            <label>Episodes</label>
+            <button type="button" onclick="openEpisodeManager()">➕ Manage Episodes</button>
+            <ul id="episodeListPreview"></ul>
+          </div>
 
           <div class="form-actions">
             <button type="button" onclick="clearForm()" class="clear-btn">Clear All</button>
@@ -128,6 +152,73 @@
         </form>
       </div>
     </div>
+
+    <!-- Episode Management Modal -->
+    <div id="episodeModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="episodeModalTitle">Manage Episode</h3>
+        <form id="episodeForm" onsubmit="saveEpisode(event)">
+          <input type="hidden" id="editingEpisodeIndex">
+
+          <label>Episode Title</label>
+          <input type="text" id="episodeTitleInput" required>
+
+          <label>Episode Description</label>
+          <textarea id="episodeDescInput" required></textarea>
+
+          <label>Video</label>
+          <input type="text" id="episodeVideoInput" placeholder="Video Link or ID" required>
+
+          <label>Release Date</label>
+          <input type="date" id="episodeReleaseInput" required>
+
+          <label>Episode Poster</label>
+          <input type="file" id="episodePosterInput" accept="image/*">
+          <div id="episodePosterPreview" class="poster-preview hidden">
+            <img src="" alt="Episode Poster Preview">
+            <button type="button" onclick="clearEpisodePoster()">Remove</button>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" onclick="closeEpisodeModal()" class="cancel-btn">Cancel</button>
+            <button type="submit" class="save-btn">Save Episode</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Episode Preview Modal -->
+    <div id="episodePreviewModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="episodeTitlePreview">Episode Details</h3>
+        <img id="episodePosterPreview" src="" alt="Episode Poster" style="width:100%; max-height:300px; object-fit:contain; margin-bottom:1rem">
+        <p><strong>Episode:</strong> <span id="episodeNumberPreview"></span></p>
+        <p><strong>Title:</strong> <span id="episodeTitleText"></span></p>
+        <p><strong>Description:</strong> <span id="episodeDescText"></span></p>
+        <p><strong>Video:</strong> <span id="episodeVideoPreview"></span></p>
+        <p><strong>Release Date:</strong> <span id="episodeReleasePreview"></span></p>
+        <button type="button" onclick="closeEpisodePreview()">Close</button>
+      </div>
+    </div>
+
+    <!-- Content Preview Modal -->
+    <div id="contentPreviewModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="previewName">Title</h3>
+        <img id="previewPoster" src="" alt="Poster" style="width:100%; max-height:300px; object-fit:contain; margin:1rem 0">
+        <p id="previewDesc">Description</p>
+        <p><strong>Studio:</strong> <span id="previewStudio"></span></p>
+        <p><strong>Genres:</strong> <span id="previewGenres"></span></p>
+        <p><strong>Rating:</strong> <span id="previewRating"></span></p>
+        <p><strong>Release Date:</strong> <span id="previewRelease"></span></p>
+        <div id="previewEpisodesContainer" class="hidden">
+          <h4>Episodes:</h4>
+          <ul id="previewEpisodesList"></ul>
+        </div>
+        <button type="button" onclick="closeContentPreview()">Close</button>
+      </div>
+    </div>
+
 
     <!-- Manage Users -->
     <div id="users" class="hidden">
@@ -146,27 +237,39 @@
       </table>
     </div>
 
+    <!-- Edit User Modal -->
     <div id="userModal" class="user-modal user-modal-hidden">
       <div class="modal-content">
         <h3>Edit User</h3>
         <form id="userForm" onsubmit="submitUserEdit(event)">
           <input type="hidden" id="editUserIndex">
-          <label>Email:<input type="email" id="editUserEmail" required></label>
-          <label>Full Name:<input type="text" id="editUserName" required></label>
-          <label>Address:<input type="text" id="editUserAddress" required></label>
-          <label>Phone Number:<input type="text" id="editUserPhone" required></label>
-          <label>Status:
-            <select id="editUserStatus">
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
-            </select>
-          </label>
-          <label>Subscribed:
-            <select id="editUserSubscribed">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </label>
+
+          <label for="editUserEmail">Email</label>
+          <input type="email" id="editUserEmail" required>
+
+          <label for="editUserName">Full Name</label>
+          <input type="text" id="editUserName" required>
+
+          <label for="editUserStatus">Status</label>
+          <select id="editUserStatus" required>
+            <option value="Active">Active</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+
+          <label for="editUserPhone">Phone Number</label>
+          <input type="text" id="editUserPhone" required>
+
+          <label for="editUserAddress">Address</label>
+          <input type="text" id="editUserAddress" required>
+
+          <label for="editUserSubscription">Subscription</label>
+          <select id="editUserSubscription" required>
+            <option value="Explorer">Explorer (Free)</option>
+            <option value="Viewer">Viewer (Basic)</option>
+            <option value="Binger">Binger (Standard)</option>
+            <option value="UltraPass">UltraPass (Premium)</option>
+          </select>
+
           <div class="modal-actions">
             <button type="button" onclick="toggleUserModal(false)">Cancel</button>
             <button type="submit">Save</button>
@@ -175,23 +278,44 @@
       </div>
     </div>
 
-    <!-- Subscriptions -->
+    <!-- User Profile View Modal -->
+    <div id="userProfileModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>User Profile</h3>
+        <div class="profile-picture" style="text-align:center; margin-bottom: 1rem;">
+          <img src="https://via.placeholder.com/100" alt="Profile Picture" style="width:100px; height:100px; border-radius:50%; object-fit:cover">
+        </div>
+        <p><strong>Email:</strong> <span id="userProfileEmail"></span></p>
+        <p><strong>Full Name:</strong> <span id="userProfileName"></span></p>
+        <p><strong>Status:</strong> <span id="userProfileStatus"></span></p>
+        <p><strong>Phone Number:</strong> <span id="userProfilePhone"></span></p>
+        <p><strong>Address:</strong> <span id="userProfileAddress"></span></p>
+        <p><strong>Subscription:</strong> <span id="userProfileSubscription"></span></p>
+        <div style="text-align: right;">
+          <button onclick="closeUserProfile()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Subscriptions Section -->
     <div id="subscriptions" class="hidden">
       <h3 class="section-title">Subscriptions</h3>
+
       <table class="data-table">
         <thead>
           <tr>
             <th>User</th>
             <th>Plan</th>
-            <th>Status</th>
+            <th>Expires On</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td>Ramon</td><td>Monthly</td><td>Active</td></tr>
-          <tr><td>Davil</td><td>Yearly</td><td>Expiring Soon</td></tr>
+        <tbody id="subscriptionTable">
+          
         </tbody>
       </table>
     </div>
+
 
     <!-- Reviews -->
     <div id="reviews" class="hidden">
