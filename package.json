@@ -1,15 +1,34 @@
 {
-  "name": "NStream",
+  "name": "m2_website_proj",
   "version": "1.0.0",
-  "description": "NStream  ",
+  "description": "A Web Development Project, making an E-Commerce website.",
   "main": "index.js",
   "scripts": {
-    "start": "live-server public",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+    
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dattsei/M2_Website_Proj.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dattsei/M2_Website_Proj/issues"
+  },
+  "homepage": "https://github.com/Dattsei/M2_Website_Proj#readme",
   "dependencies": {
-    "ejs": "^3.1.10",
-    "live-server": "^1.2.2",
-    "mongoose": "^8.15.1"
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "mongoose": "^8.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

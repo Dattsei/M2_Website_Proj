@@ -35,12 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorDiv = input.parentElement.querySelector('.input-error');
         errorDiv.innerHTML = `<i class='fas fa-exclamation-circle'></i> ${message}`;
     }
+    
     // Helper: clear error
     function clearError(input) {
         input.classList.remove('invalid');
         const errorDiv = input.parentElement.querySelector('.input-error');
         errorDiv.innerHTML = '';
     }
+    
     // Helper: show warning box
     function showWarning(id, message) {
         const box = document.getElementById(id);
@@ -49,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             box.classList.add('active');
         }
     }
+    
     function clearWarning(id) {
         const box = document.getElementById(id);
         if (box) {
@@ -57,10 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // LOGIN FORM VALIDATION
+    // LOGIN FORM VALIDATION AND SUBMISSION
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             let valid = true;
             const email = document.getElementById('email');
@@ -81,16 +84,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!valid) return;
 
-            // Simulate incorrect password for demo
-            showWarning('loginWarning', `Incorrect password for <b>${email.value}</b><br>You can <a href='#'>use a sign-in code</a>, <a href='#'>reset your password</a> or try again.`);
-            showError(password, 'Your password must contain between 4 and 60 characters.');
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email.value,
+                        password: password.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect to profile or dashboard after successful login
+                    window.location.href = '/profile';
+                } else {
+                    showWarning('loginWarning', data.message || 'Login failed');
+                    showError(password, 'Invalid email or password');
+                }
+            } catch (error) {
+                showWarning('loginWarning', 'Network error - please try again');
+                console.error('Login error:', error);
+            }
         });
     }
 
-    // REGISTER FORM VALIDATION
+    // REGISTER FORM VALIDATION AND SUBMISSION
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             let valid = true;
             const name = document.getElementById('name');
@@ -114,8 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 valid = false;
             }
             // Password validation
-            if (password.value.length < 4 || password.value.length > 60) {
-                showError(password, 'Your password must contain between 4 and 60 characters.');
+            if (password.value.length < 8) {
+                showError(password, 'Your password must be at least 8 characters.');
                 valid = false;
             }
             // Confirm password
@@ -125,12 +150,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!valid) return;
 
-            // Simulate registration error for demo
-            showWarning('registerWarning', `There was a problem creating your account. Please try again.`);
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name.value.trim(),
+                        email: email.value.trim(),
+                        password: password.value,
+                        confirmPassword: confirmPassword.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect after successful registration
+                    window.location.href = '/profile';
+                } else {
+                    showWarning('registerWarning', data.message || 'Registration failed');
+                }
+            } catch (error) {
+                showWarning('registerWarning', 'Network error - please try again');
+                console.error('Registration error:', error);
+            }
         });
     }
 
-    // Password validation
+    // Real-time Password Validation
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     passwordInputs.forEach(input => {
         input.addEventListener('input', () => {
@@ -140,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
                           /[a-z]/.test(password) && 
                           /[0-9]/.test(password);
 
-            if (!isValid) {
+            if (!isValid && password.length > 0) {
                 input.setCustomValidity('Password must be at least 8 characters long and contain uppercase, lowercase, and numbers');
             } else {
                 input.setCustomValidity('');
@@ -148,18 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Email validation
+    // Real-time Email Validation
     const emailInput = document.getElementById('email');
     if (emailInput) {
         emailInput.addEventListener('input', () => {
             const email = emailInput.value;
             const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-            if (!isValid) {
+            if (!isValid && email.length > 0) {
                 emailInput.setCustomValidity('Please enter a valid email address');
             } else {
                 emailInput.setCustomValidity('');
             }
         });
     }
-}); 
+});
