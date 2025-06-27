@@ -1,4 +1,20 @@
 // Sample Movies
+
+// Check if user is logged in
+fetch('/api/profile')
+  .then(response => {
+    if (!response.ok) {
+      // If not logged in, redirect to login page
+      window.location.href = '/login';
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('Error checking auth status:', error);
+    window.location.href = '/login';
+  });
+
+  
 const sampleMovies = [
   { title: "Red Dawn", genre: "Action", rating: 4 },
   { title: "Laugh Out Loud", genre: "Comedy", rating: 3 },
