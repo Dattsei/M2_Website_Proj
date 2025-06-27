@@ -1,16 +1,48 @@
 // Show default section on load
 window.onload = () => {
   showSection('dashboard');
+  updateCounts();
+  renderUserTable();
+  renderSubscriptionTable();
+  refreshTable();
 };
 
 function showSection(id) {
-  const sections = document.querySelectorAll('main > div');
-  sections.forEach(section => section.classList.add('hidden'));
-  const active = document.getElementById(id);
-  if (active) active.classList.remove('hidden');
+  // Hide all sections
+  const sections = document.querySelectorAll('main > div.section');
+  sections.forEach(section => {
+    section.classList.add('hidden');
+  });
+  
+  // Show the selected section
+  const activeSection = document.getElementById(id);
+  if (activeSection) {
+    activeSection.classList.remove('hidden');
+  }
 
+  // Update mobile dropdown
   const dropdown = document.getElementById('mobile-nav');
-  if (dropdown) dropdown.value = id;
+  if (dropdown) {
+    dropdown.value = id;
+  }
+
+  // Update desktop navigation active state
+  const navLinks = document.querySelectorAll('.nav-links a');
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  // Add active class to current nav link
+  const activeLink = document.querySelector(`.nav-links a[onclick*="${id}"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+}
+
+function updateCounts() {
+  document.getElementById('userCount').textContent = data.userList.length;
+  document.getElementById('subCount').textContent = subscriptionList.filter(sub => sub.plan !== 'Explorer (Free)').length;
+  document.getElementById('contentCount').textContent = movieList.length;
 }
 
 function toggleUploadModal(state) {
@@ -36,6 +68,7 @@ function clearForm() {
     document.getElementById("genreList").value = '';
     resetEpisodes();
     renderGenreButtons();
+    toggleEpisodeButton();
   }
 }
 
@@ -57,12 +90,17 @@ function openMovieModal(movie = null, index = null) {
     document.getElementById("movieTitle").value = movie.title;
     document.getElementById("movieDesc").value = movie.description;
     document.getElementById("movieRating").value = movie.rating;
-    document.getElementById("videoLink").value = movie.video;
+    document.getElementById("videoLink").value = movie.video || "";
+    document.getElementById("trailerLink").value = movie.trailer || "";
     document.getElementById("releaseDate").value = movie.release;
     document.getElementById("studio").value = movie.studio;
     document.getElementById("contentType").value = movie.type;
-    movie.genres.forEach(g => genreSet.add(g));
-    document.getElementById("genreList").value = movie.genres.join(", ");
+    
+    if (movie.genres && Array.isArray(movie.genres)) {
+      movie.genres.forEach(g => genreSet.add(g));
+    }
+    
+    document.getElementById("genreList").value = Array.from(genreSet).join(", ");
     updateSelectedGenres();
 
     if (movie.poster) {
@@ -74,9 +112,9 @@ function openMovieModal(movie = null, index = null) {
 
     episodes = movie.episodes || [];
     renderEpisodeList();
-    toggleEpisodeSection();
   }
-
+  
+  toggleEpisodeButton();
   renderGenreButtons();
 }
 
@@ -106,15 +144,15 @@ function updateSelectedGenres() {
   const text = document.getElementById("selectedGenres");
   if (selected.length) {
     text.textContent = "Selected: " + selected.join(", ");
-    text.style.display = "block";
+    text.classList.remove("hidden");
   } else {
     text.textContent = "";
-    text.style.display = "none";
+    text.classList.add("hidden");
   }
   document.getElementById("genreList").value = selected.join(", ");
 }
 
-document.getElementById("posterImage").addEventListener("change", function () {
+document.getElementById("posterImage")?.addEventListener("change", function () {
   const file = this.files[0];
   if (file) {
     const reader = new FileReader();
@@ -135,14 +173,25 @@ let episodePosterBase64 = "";
 
 function toggleEpisodeButton() {
   const isSeries = document.getElementById("contentType").value === "Series";
-  document.getElementById("episodeManagerBtn").classList.toggle("hidden", !isSeries);
-  document.getElementById("movieVideoField").style.display = isSeries ? 'none' : 'block';
+  const episodeBtn = document.getElementById("episodeManagerBtn");
+  const movieVideoField = document.getElementById("movieVideoField");
+  
+  if (episodeBtn) {
+    episodeBtn.classList.toggle("hidden", !isSeries);
+  }
+  if (movieVideoField) {
+    movieVideoField.style.display = isSeries ? 'none' : 'block';
+  }
+  
   if (!isSeries) resetEpisodes();
 }
 
 function resetEpisodes() {
   episodes = [];
-  document.getElementById("episodeListPreview").innerHTML = '';
+  const episodeList = document.getElementById("episodeListPreview");
+  if (episodeList) {
+    episodeList.innerHTML = '';
+  }
 }
 
 function openEpisodeManager(index = null) {
@@ -152,16 +201,19 @@ function openEpisodeManager(index = null) {
   document.getElementById("episodePosterPreview").classList.add("hidden");
   document.getElementById("episodePosterPreview").querySelector("img").src = "";
 
-  if (index !== null) {
+  if (index !== null && episodes[index]) {
     const ep = episodes[index];
     document.getElementById("editingEpisodeIndex").value = index;
     document.getElementById("episodeTitleInput").value = ep.title;
     document.getElementById("episodeDescInput").value = ep.description;
     document.getElementById("episodeVideoInput").value = ep.video;
     document.getElementById("episodeReleaseInput").value = ep.release;
-    episodePosterBase64 = ep.poster;
-    document.getElementById("episodePosterPreview").classList.remove("hidden");
-    document.getElementById("episodePosterPreview").querySelector("img").src = ep.poster;
+    
+    if (ep.poster) {
+      episodePosterBase64 = ep.poster;
+      document.getElementById("episodePosterPreview").classList.remove("hidden");
+      document.getElementById("episodePosterPreview").querySelector("img").src = ep.poster;
+    }
   } else {
     document.getElementById("editingEpisodeIndex").value = "";
   }
@@ -179,7 +231,7 @@ function clearEpisodePoster() {
   document.getElementById("episodePosterPreview").classList.add("hidden");
 }
 
-document.getElementById("episodePosterInput").addEventListener("change", function () {
+document.getElementById("episodePosterInput")?.addEventListener("change", function () {
   const file = this.files[0];
   if (file) {
     const reader = new FileReader();
@@ -205,25 +257,27 @@ function saveEpisode(event) {
 
   const index = document.getElementById("editingEpisodeIndex").value;
   if (index !== "") {
-    episodes[index] = episode;
+    episodes[parseInt(index)] = episode;
   } else {
     episodes.push(episode);
   }
 
-  renderEpisodePreviewList();
+  renderEpisodeList();
   closeEpisodeModal();
 }
 
-function renderEpisodePreviewList() {
+function renderEpisodeList() {
   const list = document.getElementById("episodeListPreview");
+  if (!list) return;
+  
   list.innerHTML = "";
 
   episodes.forEach((ep, index) => {
     const li = document.createElement("li");
     li.innerHTML = `<strong>Episode ${index + 1}</strong>: ${ep.title}
-      <button onclick="openEpisodeManager(${index})">Edit</button>
-      <button onclick="deleteEpisode(${index})">Delete</button>
-      <button onclick="previewEpisode(${index})">Preview</button>`;
+      <button type="button" onclick="openEpisodeManager(${index})">Edit</button>
+      <button type="button" onclick="deleteEpisode(${index})">Delete</button>
+      <button type="button" onclick="previewEpisode(${index})">Preview</button>`;
     list.appendChild(li);
   });
 }
@@ -231,14 +285,16 @@ function renderEpisodePreviewList() {
 function deleteEpisode(index) {
   if (confirm("Are you sure you want to delete this episode?")) {
     episodes.splice(index, 1);
-    renderEpisodePreviewList();
+    renderEpisodeList();
   }
 }
 
 function previewEpisode(index) {
+  if (!episodes[index]) return;
+  
   const ep = episodes[index];
   document.getElementById('episodeTitlePreview').textContent = ep.title;
-  document.getElementById('episodePosterPreview').src = ep.poster;
+  document.getElementById('episodePosterPreview').src = ep.poster || '';
   document.getElementById('episodeNumberPreview').textContent = index + 1;
   document.getElementById('episodeTitleText').textContent = ep.title;
   document.getElementById('episodeDescText').textContent = ep.description;
@@ -255,34 +311,40 @@ function submitMovie(event) {
   event.preventDefault();
 
   const type = document.getElementById("contentType").value;
+  const genres = document.getElementById("genreList").value;
+  
   const movie = {
     type: type,
-    title: document.getElementById("movieTitle").value,
-    description: document.getElementById("movieDesc").value,
-    studio: document.getElementById("studio").value,
-    genres: document.getElementById("genreList").value.split(", "),
+    title: document.getElementById("movieTitle").value.trim(),
+    description: document.getElementById("movieDesc").value.trim(),
+    studio: document.getElementById("studio").value.trim(),
+    genres: genres ? genres.split(", ").filter(g => g.trim()) : [],
     rating: document.getElementById("movieRating").value,
-    trailer: document.getElementById("trailerLink").value,
-    video: type === 'Movie' ? document.getElementById("videoLink").value : "",
+    trailer: document.getElementById("trailerLink").value.trim(),
+    video: type === 'Movie' ? document.getElementById("videoLink").value.trim() : "",
     release: document.getElementById("releaseDate").value,
     poster: posterBase64,
     episodes: type === 'Series' ? [...episodes] : []
   };
 
   const id = document.getElementById("movieId").value;
-  if (id !== "") movieList[id] = movie;
-  else movieList.push(movie);
+  if (id !== "") {
+    movieList[parseInt(id)] = movie;
+  } else {
+    movieList.push(movie);
+  }
 
   refreshTable();
+  updateCounts();
   toggleUploadModal(false);
 }
 
 function previewMovie(movie) {
   document.getElementById("previewName").textContent = movie.title;
-  document.getElementById("previewPoster").src = movie.poster;
+  document.getElementById("previewPoster").src = movie.poster || '';
   document.getElementById("previewDesc").textContent = movie.description;
   document.getElementById("previewStudio").textContent = movie.studio;
-  document.getElementById("previewGenres").textContent = movie.genres.join(', ');
+  document.getElementById("previewGenres").textContent = Array.isArray(movie.genres) ? movie.genres.join(', ') : '';
   document.getElementById("previewRating").textContent = movie.rating;
   document.getElementById("previewRelease").textContent = movie.release;
 
@@ -290,11 +352,11 @@ function previewMovie(movie) {
   const episodesList = document.getElementById("previewEpisodesList");
   episodesList.innerHTML = '';
 
-  if (movie.type === 'Series' && movie.episodes.length > 0) {
+  if (movie.type === 'Series' && movie.episodes && movie.episodes.length > 0) {
     episodesContainer.classList.remove("hidden");
     movie.episodes.forEach((ep, i) => {
       const li = document.createElement('li');
-      li.innerHTML = `Episode ${i + 1}: ${ep.title} <button onclick='previewStaticEpisode(${JSON.stringify(ep)})'>View</button>`;
+      li.innerHTML = `Episode ${i + 1}: ${ep.title} <button onclick="previewStaticEpisode(${i}, '${movie.title}')">View</button>`;
       episodesList.appendChild(li);
     });
   } else {
@@ -304,10 +366,15 @@ function previewMovie(movie) {
   document.getElementById("contentPreviewModal").classList.remove("hidden");
 }
 
-function previewStaticEpisode(ep) {
+function previewStaticEpisode(episodeIndex, movieTitle) {
+  // Find the movie by title to get the episode
+  const movie = movieList.find(m => m.title === movieTitle);
+  if (!movie || !movie.episodes || !movie.episodes[episodeIndex]) return;
+  
+  const ep = movie.episodes[episodeIndex];
   document.getElementById('episodeTitlePreview').textContent = ep.title;
-  document.getElementById('episodePosterPreview').src = ep.poster;
-  document.getElementById('episodeNumberPreview').textContent = "-";
+  document.getElementById('episodePosterPreview').src = ep.poster || '';
+  document.getElementById('episodeNumberPreview').textContent = episodeIndex + 1;
   document.getElementById('episodeTitleText').textContent = ep.title;
   document.getElementById('episodeDescText').textContent = ep.description;
   document.getElementById('episodeVideoPreview').textContent = ep.video;
@@ -317,6 +384,8 @@ function previewStaticEpisode(ep) {
 
 function refreshTable() {
   const tbody = document.getElementById("contentTable");
+  if (!tbody) return;
+  
   tbody.innerHTML = "";
 
   if (movieList.length === 0) {
@@ -338,54 +407,39 @@ function refreshTable() {
       <td>${movie.type}</td>
       <td>${movie.release}</td>
       <td>
-        <button class="btn-link" onclick='openMovieModal(${JSON.stringify(movie)}, ${index})'>Edit</button>
-        <button class="btn-link btn-delete" onclick='deleteMovie(${index})'>Delete</button>
-        <button class="btn-link" onclick='previewMovie(${JSON.stringify(movie)})'>Preview</button>
+        <button class="btn-link" onclick="editMovie(${index})">Edit</button>
+        <button class="btn-link btn-delete" onclick="deleteMovie(${index})">Delete</button>
+        <button class="btn-link" onclick="previewMovieByIndex(${index})">Preview</button>
       </td>`;
     tbody.appendChild(row);
   });
+}
+
+function editMovie(index) {
+  if (movieList[index]) {
+    openMovieModal(movieList[index], index);
+  }
+}
+
+function previewMovieByIndex(index) {
+  if (movieList[index]) {
+    previewMovie(movieList[index]);
+  }
 }
 
 function deleteMovie(index) {
   if (confirm("Are you sure you want to delete this movie?")) {
     movieList.splice(index, 1);
     refreshTable();
+    updateCounts();
   }
-}
-
-function previewMovie(movie) {
-  document.getElementById("previewName").textContent = movie.title;
-  document.getElementById("previewPoster").src = movie.poster;
-  document.getElementById("previewDesc").textContent = movie.description;
-  document.getElementById("previewStudio").textContent = movie.studio;
-  document.getElementById("previewGenres").textContent = movie.genres.join(', ');
-  document.getElementById("previewRating").textContent = movie.rating;
-  document.getElementById("previewRelease").textContent = movie.release;
-
-  const episodesContainer = document.getElementById("previewEpisodesContainer");
-  const episodesList = document.getElementById("previewEpisodesList");
-  episodesList.innerHTML = '';
-
-  if (movie.type === 'Series' && movie.episodes.length > 0) {
-    episodesContainer.classList.remove("hidden");
-    movie.episodes.forEach((ep, i) => {
-      const li = document.createElement('li');
-      li.textContent = `Episode ${i + 1}: ${ep.title}`;
-      episodesList.appendChild(li);
-    });
-  } else {
-    episodesContainer.classList.add("hidden");
-  }
-
-  document.getElementById("contentPreviewModal").classList.remove("hidden");
 }
 
 function closeContentPreview() {
   document.getElementById("contentPreviewModal").classList.add("hidden");
 }
 
-
-// USERS
+// USERS DATA
 const data = {
   users: 0,
   subscriptions: 0,
@@ -420,6 +474,8 @@ const data = {
 
 function renderUserTable() {
   const table = document.getElementById('userTable');
+  if (!table) return;
+  
   table.innerHTML = '';
 
   if (data.userList.length === 0) {
@@ -439,17 +495,17 @@ function renderUserTable() {
         <td>${user.email}</td>
         <td>
           <button class="btn-link" onclick="editUser(${index})">Edit</button>
-          <button class="btn-link" onclick="viewUserProfile(data.userList[${index}])">Preview</button>
+          <button class="btn-link" onclick="viewUserProfile(${index})">Preview</button>
           <button class="btn-link btn-delete" onclick="deleteUser(${index})">Delete</button>
         </td>`;
       table.appendChild(row);
     });
   }
-
-  document.getElementById('userCount').textContent = data.userList.length;
 }
 
 function editUser(index) {
+  if (!data.userList[index]) return;
+  
   const user = data.userList[index];
   document.getElementById('editUserIndex').value = index;
   document.getElementById('editUserEmail').value = user.email;
@@ -463,34 +519,43 @@ function editUser(index) {
 
 function submitUserEdit(event) {
   event.preventDefault();
-  const index = document.getElementById('editUserIndex').value;
-  data.userList[index] = {
-    email: document.getElementById('editUserEmail').value,
-    fullName: document.getElementById('editUserName').value,
-    address: document.getElementById('editUserAddress').value,
-    phone: document.getElementById('editUserPhone').value,
-    status: document.getElementById('editUserStatus').value,
-    subscription: document.getElementById('editUserSubscription').value
-  };
-  renderUserTable();
-  document.getElementById('userCount').textContent = data.userList.length;
-  toggleUserModal(false);
+  const index = parseInt(document.getElementById('editUserIndex').value);
+  
+  if (data.userList[index]) {
+    data.userList[index] = {
+      email: document.getElementById('editUserEmail').value.trim(),
+      fullName: document.getElementById('editUserName').value.trim(),
+      address: document.getElementById('editUserAddress').value.trim(),
+      phone: document.getElementById('editUserPhone').value.trim(),
+      status: document.getElementById('editUserStatus').value,
+      subscription: document.getElementById('editUserSubscription').value
+    };
+    
+    renderUserTable();
+    updateCounts();
+    toggleUserModal(false);
+  }
 }
 
 function deleteUser(index) {
-  if (confirm(`Delete user: ${data.userList[index].fullName}?`)) {
+  if (data.userList[index] && confirm(`Delete user: ${data.userList[index].fullName}?`)) {
     data.userList.splice(index, 1);
     renderUserTable();
-    document.getElementById('userCount').textContent = data.userList.length;
+    updateCounts();
   }
 }
 
 function toggleUserModal(state) {
   const modal = document.getElementById('userModal');
-  modal.classList.toggle('user-modal-hidden', !state);
+  if (modal) {
+    modal.classList.toggle('user-modal-hidden', !state);
+  }
 }
 
-function viewUserProfile(user) {
+function viewUserProfile(index) {
+  if (!data.userList[index]) return;
+  
+  const user = data.userList[index];
   document.getElementById("userProfileEmail").textContent = user.email;
   document.getElementById("userProfileName").textContent = user.fullName;
   document.getElementById("userProfileStatus").textContent = user.status;
@@ -504,6 +569,7 @@ function closeUserProfile() {
   document.getElementById("userProfileModal").classList.add("hidden");
 }
 
+// SUBSCRIPTIONS DATA
 const subscriptionList = [
   { name: 'Ramon Fuentes', plan: 'Monthly', expires: '2025-07-19' },
   { name: 'David Axl Andoy', plan: 'Yearly', expires: '2026-01-01' },
@@ -512,6 +578,8 @@ const subscriptionList = [
 
 function renderSubscriptionTable() {
   const tbody = document.getElementById('subscriptionTable');
+  if (!tbody) return;
+  
   tbody.innerHTML = '';
 
   subscriptionList.forEach(sub => {
@@ -524,7 +592,3 @@ function renderSubscriptionTable() {
     tbody.appendChild(row);
   });
 }
-
-renderSubscriptionTable();
-refreshTable();
-renderUserTable();
