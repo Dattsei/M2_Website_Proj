@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.success) {
                     // Redirect to profile or dashboard after successful login
-                    window.location.href = '/profile';
+                    window.location.href = '/mainpage';
                 } else {
                     showWarning('loginWarning', data.message || 'Login failed');
                     showError(password, 'Invalid email or password');
@@ -152,32 +152,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: name.value.trim(),
-                        email: email.value.trim(),
-                        password: password.value,
-                        confirmPassword: confirmPassword.value
-                    })
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    name: name.value.trim(),
+                    email: email.value.trim(),
+                    password: password.value,
+                    confirmPassword: confirmPassword.value
+                  })
                 });
-
+            
                 const data = await response.json();
-
+            
                 if (data.success) {
-                    // Redirect after successful registration
-                    window.location.href = '/profile';
+                  showWarning('registerWarning', '✅ Registration successful! Redirecting...');
+                  setTimeout(() => {
+                    window.location.href = '/mainpage';
+                  }, 1500);
                 } else {
-                    showWarning('registerWarning', data.message || 'Registration failed');
+                  showWarning('registerWarning', data.message || 'Registration failed');
+                  if (data.message.includes('Email already in use')) {
+                    showError(email, 'Email already registered');
+                  }
                 }
-            } catch (error) {
-                showWarning('registerWarning', 'Network error - please try again');
+              } catch (error) {
+                showWarning('registerWarning', 'Network error. Please try again.');
                 console.error('Registration error:', error);
-            }
-        });
+              }
+            });
     }
+
 
     // Real-time Password Validation
     const passwordInputs = document.querySelectorAll('input[type="password"]');
