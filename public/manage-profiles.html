@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Profiles - Nstream</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/manage.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Manage Profiles</h1>
+    
+    <div class="profile-grid" id="profileGrid">
+      <!-- Profiles will be rendered here -->
+    </div>
+    
+    <a href="mainpage.html" class="done-btn">Done</a>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeEditProfile()">&times;</button>
+      <h2 id="modalTitle">Edit Profile</h2>
+      <div class="profile-form">
+        <label for="profileName">Profile Name:</label>
+        <input type="text" id="profileName" class="form-input" maxlength="20">
+        
+        <label>Current Avatar:</label>
+        <div style="text-align: center; margin: 1rem 0;">
+          <img id="currentAvatar" src="" alt="Current Avatar" style="width: 100px; height: 100px; border-radius: 8px; object-fit: cover;">
+        </div>
+        
+        <button onclick="openAvatarSelection()" class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;">
+          <i class="fas fa-image"></i> Change Avatar
+        </button>
+        
+        <div class="btn-group">
+          <button onclick="saveProfile()" class="btn btn-primary">Save</button>
+          <button onclick="closeEditProfile()" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar Selection Modal -->
+  <div id="avatarModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAvatarSelection()">&times;</button>
+      <h2>Choose Avatar</h2>
+      <div class="avatar-grid" id="avatarGrid">
+        <!-- Avatars will be rendered here -->
+      </div>
+      <div class="btn-group">
+        <button onclick="addNewAvatar()" class="btn btn-secondary">
+          <i class="fas fa-plus"></i> Add New Avatar
+        </button>
+        <button onclick="closeAvatarSelection()" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Avatar Modal -->
+  <div id="addAvatarModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAddAvatar()">&times;</button>
+      <h2>Add New Avatar</h2>
+      <div class="profile-form">
+        <label for="avatarUrl">Image URL:</label>
+        <input type="url" id="avatarUrl" class="form-input" placeholder="https://example.com/image.jpg">
+        <small style="opacity: 0.7; display: block; margin-bottom: 1rem;">
+          Enter a direct link to an image (JPG, PNG, GIF)
+        </small>
+        
+        <div class="btn-group">
+          <button onclick="saveNewAvatar()" class="btn btn-primary">Add Avatar</button>
+          <button onclick="closeAddAvatar()" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/manage.js"></script>
+</body>
+</html>

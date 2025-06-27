@@ -16,7 +16,7 @@
         <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
       </div>
       <ul class="nav-links">
-        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#home" >Home</a></li>
         <li><a href="#movies">Movies</a></li>
         <li><a href="#tvshows">TV Shows</a></li>
         <li><a href="#trending">Trending</a></li>
@@ -29,10 +29,25 @@
           <i class="fas fa-search"></i>
         </button>
         <div class="profile-menu">
-          <button class="profile-btn" onclick="toggleProfile()">
-            <i class="fas fa-user"></i>
-          </button>
-        </div>
+  <button class="profile-btn" onclick="toggleProfileMenu()">
+    <img src="assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
+  </button>
+  <div id="profileDropdown" class="dropdown hidden">
+    <ul>
+
+      <li onclick="location.href='manage-profiles.html'">
+  <i class="fas fa-pencil-alt"></i> Manage Profiles
+</li>
+
+      <li><i class="fas fa-right-left"></i> Transfer Profile</li>
+      <li><i class="fas fa-user-cog"></i> Account</li>
+      <li><i class="fas fa-question-circle"></i> Help Center</li>
+      <hr />
+      <li><i class="fas fa-sign-out-alt"></i> Sign out of Nstream</li>
+    </ul>
+  </div>
+</div>
+
       </div>
     </nav>
   </header>
@@ -109,6 +124,48 @@
     <p><strong>Genre:</strong> <span id="modalMovieGenre"></span></p>
     <p><strong>Rating:</strong> <span id="modalMovieRating"></span></p>
     <p style="margin-top:1rem;">Enjoy streaming this movie on NStream!</p>
+  </div>
+</div>
+<!-- Change Profile Modal -->
+<div id="changeProfileModal" class="modal" style="display: none;">
+  <div class="modal-content" style="text-align: center;">
+    <h2>Select a Profile</h2>
+    <div id="changeProfileList" class="profile-grid"></div>
+    <button onclick="closeChangeProfileModal()" class="cta-btn secondary">Cancel</button>
+  </div>
+</div>
+
+
+<!-- Change Profile Modal -->
+<div id="changeProfileModal" class="modal" style="display: none;">
+  <div class="modal-content" style="text-align: center;">
+    <h2>Select a Profile</h2>
+    <div id="changeProfileList" class="profile-grid"></div>
+    <button onclick="closeChangeProfileModal()" class="cta-btn secondary">Cancel</button>
+  </div>
+</div>
+<div id="helpCenterModal" class="modal" style="display: none;">
+  <div class="modal-content help-content">
+    <button class="modal-close" onclick="closeHelpCenter()">&times;</button>
+    <h2>Help Center</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3>How do I add or remove a profile?</h3>
+        <p>Go to "Manage Profiles" in the menu to create, edit, or delete a profile. You can also set avatars and names from there.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How can I switch profiles?</h3>
+        <p>Click "Change Profile" from the dropdown menu, then choose another profile.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Why can't my video play?</h3>
+        <p>Check your internet connection. If the issue persists, reload the page or clear your browser cache.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is this service free?</h3>
+        <p>This is a mock streaming site for personal use. There are no fees associated with using Nstream.</p>
+      </div>
+    </div>
   </div>
 </div>
 

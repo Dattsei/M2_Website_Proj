@@ -180,3 +180,137 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+function getProfiles() {
+  return JSON.parse(localStorage.getItem("profiles")) || [];
+}
+
+function getCurrentProfile() {
+  return JSON.parse(localStorage.getItem("currentProfile"));
+}
+
+function setCurrentProfile(profile) {
+  localStorage.setItem("currentProfile", JSON.stringify(profile));
+  updateNavbarProfile(profile);
+}
+
+function openChangeProfileModal() {
+  const modal = document.getElementById("changeProfileModal");
+  const list = document.getElementById("changeProfileList");
+  const profiles = getProfiles();
+
+  list.innerHTML = "";
+
+  profiles.forEach((profile, index) => {
+    const div = document.createElement("div");
+    div.className = "profile-card";
+    div.innerHTML = `
+      <img src="${profile.avatar}" alt="${profile.name}" />
+      <p>${profile.name}</p>
+    `;
+    div.onclick = () => {
+      setCurrentProfile(profile);
+      closeChangeProfileModal();
+    };
+    list.appendChild(div);
+  });
+
+  modal.style.display = "flex";
+}
+
+function closeChangeProfileModal() {
+  document.getElementById("changeProfileModal").style.display = "none";
+}
+
+function updateNavbarProfile(profile) {
+  const avatarEl = document.querySelector(".profile-avatar");
+  if (avatarEl && profile) {
+    avatarEl.src = profile.avatar;
+    avatarEl.alt = profile.name;
+  }
+}
+
+window.onload = () => {
+  const profile = getCurrentProfile();
+  if (profile) {
+    updateNavbarProfile(profile);
+  }
+};
+
+// Attach to menu
+document.querySelector("li:has(i.fa-right-left)")?.addEventListener("click", openChangeProfileModal);
+function openHelpCenter() {
+  document.getElementById("helpCenterModal").style.display = "flex";
+}
+
+function closeHelpCenter() {
+  document.getElementById("helpCenterModal").style.display = "none";
+}
+
+// Attach to Help Center menu item
+document.querySelector("li:has(i.fa-question-circle)")?.addEventListener("click", openHelpCenter);
+function toggleProfileMenu() {
+  const dropdown = document.getElementById("profileDropdown");
+  dropdown.classList.toggle("hidden");
+}
+function getProfiles() {
+  return JSON.parse(localStorage.getItem("profiles")) || [];
+}
+
+function getCurrentProfile() {
+  return JSON.parse(localStorage.getItem("currentProfile"));
+}
+
+function setCurrentProfile(profile) {
+  localStorage.setItem("currentProfile", JSON.stringify(profile));
+  updateNavbarProfile(profile);
+}
+
+function openChangeProfileModal() {
+  const modal = document.getElementById("changeProfileModal");
+  const list = document.getElementById("changeProfileList");
+  const profiles = getProfiles();
+
+  list.innerHTML = "";
+
+  profiles.forEach((profile, index) => {
+    const div = document.createElement("div");
+    div.className = "profile-card";
+    div.innerHTML = `
+      <img src="${profile.avatar}" alt="${profile.name}" />
+      <p>${profile.name}</p>
+    `;
+    div.onclick = () => {
+      setCurrentProfile(profile);
+      closeChangeProfileModal();
+    };
+    list.appendChild(div);
+  });
+
+  modal.style.display = "flex";
+}
+
+function closeChangeProfileModal() {
+  document.getElementById("changeProfileModal").style.display = "none";
+}
+
+function updateNavbarProfile(profile) {
+  const avatarEl = document.querySelector(".profile-avatar");
+  if (avatarEl && profile) {
+    avatarEl.src = profile.avatar;
+    avatarEl.alt = profile.name;
+  }
+}
+
+window.onload = () => {
+  const profile = getCurrentProfile();
+  if (profile) {
+    updateNavbarProfile(profile);
+  }
+};
+
+// Attach to menu
+document.querySelector("li:has(i.fa-right-left)")?.addEventListener("click", openChangeProfileModal);
+const profile = getCurrentProfile();
+if (profile) {
+  updateNavbarProfile(profile);
+}
