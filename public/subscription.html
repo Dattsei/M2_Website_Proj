@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Your Plan - Nstream</title>
+  <link rel="stylesheet" href="css/subscription.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="subscription-container">
+    <h1>Choose the plan that’s right for you</h1>
+    <p>Watch all you want. Cancel anytime.</p>
+
+    <div class="plans">
+      <div class="plan-card" onclick="selectPlan('basic')">
+        <h2>Basic</h2>
+        <p>₱199 / month</p>
+        <ul>
+          <li>Good video quality</li>
+          <li>720p resolution</li>
+          <li>Watch on 1 screen</li>
+        </ul>
+      </div>
+
+      <div class="plan-card" onclick="selectPlan('standard')">
+        <h2>Standard</h2>
+        <p>₱399 / month</p>
+        <ul>
+          <li>Great video quality</li>
+          <li>1080p resolution</li>
+          <li>Watch on 2 screens</li>
+        </ul>
+      </div>
+
+      <div class="plan-card" onclick="selectPlan('premium')">
+        <h2>Premium</h2>
+        <p>₱549 / month</p>
+        <ul>
+          <li>Best video quality</li>
+          <li>4K+HDR resolution</li>
+          <li>Watch on 4 screens</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="continue-btn" onclick="proceedWithPlan()">Continue</button>
+  </div>
+
+  <script>
+    let selectedPlan = null;
+
+    function selectPlan(plan) {
+      selectedPlan = plan;
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+      document.querySelector(`.plan-card[onclick="selectPlan('${plan}')"]`).classList.add('selected');
+    }
+
+    function proceedWithPlan() {
+      if (!selectedPlan) {
+        alert("Please select a plan to continue.");
+        return;
+      }
+      localStorage.setItem('selectedPlan', selectedPlan);
+      window.location.href = "account.html"; // Redirect or handle signup
+    }
+  </script>
+</body>
+</html>

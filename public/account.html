@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account - Nstream</title>
+  <link rel="stylesheet" href="css/account.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="account-container">
+    <h1>Account Settings</h1>
+
+    <section class="account-section">
+      <h2>Membership & Billing</h2>
+      <div class="account-row">
+        <p>Email: <strong>user@example.com</strong></p>
+        <p>Password: ******** <button class="link-btn" onclick="editPassword()">Change</button></p>
+        <p>Plan: <strong id="planDisplay">Premium</strong> 
+  <a href="subscription.html" class="link-btn">Change Plan</a>
+</p>
+
+
+
+      </div>
+    </section>
+
+    <section class="account-section">
+      <h2>Profiles & Parental Controls</h2>
+      <div id="profileList" class="profile-list">
+        <!-- Will be loaded from localStorage -->
+      </div>
+    </section>
+
+    <section class="account-section">
+      <h2>Settings</h2>
+      <ul class="settings-list">
+        <li><i class="fas fa-bell"></i> Notifications</li>
+        <li><i class="fas fa-user-lock"></i> Parental Controls</li>
+        <li><i class="fas fa-history"></i> Viewing Activity</li>
+      </ul>
+    </section>
+  </div>
+<!-- Password Modal -->
+<div id="passwordModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closePasswordModal()">&times;</span>
+    <h2>Change Password</h2>
+    <input type="password" id="newPassword" placeholder="Enter new password" />
+    <button class="link-btn" onclick="savePassword()">Save</button>
+  </div>
+</div>
+
+<!-- Plan Modal -->
+<div id="planModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closePlanModal()">&times;</span>
+    <h2>Select Plan</h2>
+    <select id="planSelect">
+      <option value="Basic">Basic</option>
+      <option value="Standard">Standard</option>
+      <option value="Premium">Premium</option>
+    </select>
+    <button class="link-btn" onclick="savePlan()">Save</button>
+  </div>
+</div>
+
+  <script>
+  function editPassword() {
+    document.getElementById("passwordModal").style.display = "block";
+  }
+
+  function closePasswordModal() {
+    document.getElementById("passwordModal").style.display = "none";
+  }
+
+  function savePassword() {
+    const newPass = document.getElementById("newPassword").value;
+    if (newPass.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+    localStorage.setItem("userPassword", newPass);
+    alert("Password updated!");
+    closePasswordModal();
+  }
+
+  function editPlan() {
+    document.getElementById("planModal").style.display = "block";
+  }
+
+  function closePlanModal() {
+    document.getElementById("planModal").style.display = "none";
+  }
+
+  function savePlan() {
+    const plan = document.getElementById("planSelect").value;
+    localStorage.setItem("userPlan", plan);
+    document.getElementById("planDisplay").innerText = plan;
+    alert("Plan updated to " + plan);
+    closePlanModal();
+  }
+
+  // Load profiles from localStorage and plan
+  window.onload = () => {
+    const profiles = JSON.parse(localStorage.getItem("profiles")) || [];
+    const container = document.getElementById("profileList");
+
+    profiles.forEach((profile) => {
+      const div = document.createElement("div");
+      div.className = "profile-item";
+      div.innerHTML = `
+        <img src="${profile.avatar}" class="profile-avatar">
+        <span>${profile.name}</span>
+      `;
+      container.appendChild(div);
+    });
+
+    const currentPlan = localStorage.getItem("userPlan") || "Premium";
+    document.getElementById("planDisplay").innerText = currentPlan;
+  }
+</script>
+
+</body>
+</html>

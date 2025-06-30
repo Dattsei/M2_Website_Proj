@@ -22,32 +22,32 @@
         <li><a href="#trending">Trending</a></li>
       </ul>
       <div class="nav-right">
-        <a href="/favorites" class="active" title="Favorites">
+        <a href="favorites.html" class="active" title="Favorites">
           <i class="fas fa-heart"></i>
         </a>
-        <button class="search-btn" onclick="toggleSearch()">
-          <i class="fas fa-search"></i>
+        <a href="search.html" class="search-btn">
+  <i class="fas fa-search"></i>
+</a>
         </button>
         <div class="profile-menu">
-  <button class="profile-btn" onclick="toggleProfileMenu()">
-    <img src="assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
-  </button>
-  <div id="profileDropdown" class="dropdown hidden">
-    <ul>
-
-      <li onclick="location.href='manage-profiles.html'">
-  <i class="fas fa-pencil-alt"></i> Manage Profiles
-</li>
-
-      <li><i class="fas fa-right-left"></i> Transfer Profile</li>
-      <li><i class="fas fa-user-cog"></i> Account</li>
-      <li><i class="fas fa-question-circle"></i> Help Center</li>
-      <hr />
-      <li><i class="fas fa-sign-out-alt"></i> Sign out of Nstream</li>
-    </ul>
-  </div>
-</div>
-
+          <button class="profile-btn" onclick="toggleProfileMenu()">
+            <img src="assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
+          </button>
+          <div id="profileDropdown" class="dropdown hidden">
+            <ul>
+              <li onclick="location.href='manage-profiles.html'">
+                <i class="fas fa-pencil-alt"></i> Manage Profiles
+              </li>
+              <li><i class="fas fa-right-left"></i> Transfer Profile</li>
+              <li onclick="location.href='account.html'">
+                <i class="fas fa-user-cog"></i> Account
+              </li>
+              <li><i class="fas fa-question-circle"></i> Help Center</li>
+              <hr />
+              <li><i class="fas fa-sign-out-alt"></i> Sign out of Nstream</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -66,21 +66,22 @@
   </div>
 
   <!-- Hero Section -->
-<section id="home" class="hero">
-  <video autoplay muted loop playsinline class="hero-video">
-    <source src="assets/videos/main background.mp4" type="video/mp4">
-  </video>
-  <div class="hero-content">
-    <div class="cta-buttons">
-      <a href="#movies" class="cta-btn primary">
-        <i class="fas fa-play"></i> Start Watching
-      </a>
-      <a href="#" class="cta-btn secondary" onclick="openLearnMore()"> 
-        <i class="fas fa-info-circle"></i> Learn More
+  <section id="home" class="hero">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="assets/videos/main background.mp4" type="video/mp4">
+    </video>
+    <div class="hero-content">
+      <div class="cta-buttons">
+        <a href="#movies" class="cta-btn primary">
+          <i class="fas fa-play"></i> Start Watching
         </a>
+        <a href="#" class="cta-btn secondary" onclick="openLearnMore()"> 
+          <i class="fas fa-info-circle"></i> Learn More
+        </a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
   <main>
     <!-- Categories -->
     <section class="content-section">
@@ -117,60 +118,51 @@
   </main>
 
   <!-- Movie Detail Modal -->
-<div id="movieDetailModal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeMovieDetail()">&times;</button>
-    <h2 id="modalMovieTitle"></h2>
-    <p><strong>Genre:</strong> <span id="modalMovieGenre"></span></p>
-    <p><strong>Rating:</strong> <span id="modalMovieRating"></span></p>
-    <p style="margin-top:1rem;">Enjoy streaming this movie on NStream!</p>
+  <div id="movieDetailModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeMovieDetail()">&times;</button>
+      <h2 id="modalMovieTitle"></h2>
+      <p><strong>Genre:</strong> <span id="modalMovieGenre"></span></p>
+      <p><strong>Rating:</strong> <span id="modalMovieRating"></span></p>
+      <p style="margin-top:1rem;">Enjoy streaming this movie on NStream!</p>
+    </div>
   </div>
-</div>
-<!-- Change Profile Modal -->
-<div id="changeProfileModal" class="modal" style="display: none;">
-  <div class="modal-content" style="text-align: center;">
-    <h2>Select a Profile</h2>
-    <div id="changeProfileList" class="profile-grid"></div>
-    <button onclick="closeChangeProfileModal()" class="cta-btn secondary">Cancel</button>
-  </div>
-</div>
 
-
-<!-- Change Profile Modal -->
-<div id="changeProfileModal" class="modal" style="display: none;">
-  <div class="modal-content" style="text-align: center;">
-    <h2>Select a Profile</h2>
-    <div id="changeProfileList" class="profile-grid"></div>
-    <button onclick="closeChangeProfileModal()" class="cta-btn secondary">Cancel</button>
+  <!-- Change Profile Modal -->
+  <div id="changeProfileModal" class="modal" style="display: none;">
+    <div class="modal-content" style="text-align: center;">
+      <h2>Select a Profile</h2>
+      <div id="changeProfileList" class="profile-grid"></div>
+      <button onclick="closeChangeProfileModal()" class="cta-btn secondary">Cancel</button>
+    </div>
   </div>
-</div>
-<div id="helpCenterModal" class="modal" style="display: none;">
-  <div class="modal-content help-content">
-    <button class="modal-close" onclick="closeHelpCenter()">&times;</button>
-    <h2>Help Center</h2>
-    <div class="faq-list">
-      <div class="faq-item">
-        <h3>How do I add or remove a profile?</h3>
-        <p>Go to "Manage Profiles" in the menu to create, edit, or delete a profile. You can also set avatars and names from there.</p>
-      </div>
-      <div class="faq-item">
-        <h3>How can I switch profiles?</h3>
-        <p>Click "Change Profile" from the dropdown menu, then choose another profile.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Why can't my video play?</h3>
-        <p>Check your internet connection. If the issue persists, reload the page or clear your browser cache.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Is this service free?</h3>
-        <p>This is a mock streaming site for personal use. There are no fees associated with using Nstream.</p>
+
+  <!-- Help Center Modal -->
+  <div id="helpCenterModal" class="modal" style="display: none;">
+    <div class="modal-content help-content">
+      <button class="modal-close" onclick="closeHelpCenter()">&times;</button>
+      <h2>Help Center</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>How do I add or remove a profile?</h3>
+          <p>Go to "Manage Profiles" in the menu to create, edit, or delete a profile. You can also set avatars and names from there.</p>
+        </div>
+        <div class="faq-item">
+          <h3>How can I switch profiles?</h3>
+          <p>Click "Change Profile" from the dropdown menu, then choose another profile.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Why can't my video play?</h3>
+          <p>Check your internet connection. If the issue persists, reload the page or clear your browser cache.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Is this service free?</h3>
+          <p>This is a mock streaming site for personal use. There are no fees associated with using Nstream.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
 
   <script src="scripts/mainpage.js"></script>
 </body>
-
 </html>

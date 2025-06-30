@@ -314,3 +314,46 @@ const profile = getCurrentProfile();
 if (profile) {
   updateNavbarProfile(profile);
 }
+// ========== FAVORITES PAGE LOGIC ==========
+
+// Detect if we're on the favorites page
+document.addEventListener("DOMContentLoaded", () => {
+  const favoritesGrid = document.getElementById("favoritesGrid");
+  if (favoritesGrid) renderFavoritesPage();
+});
+
+function renderFavoritesPage() {
+  const favoritesGrid = document.getElementById("favoritesGrid");
+  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+  favoritesGrid.innerHTML = "";
+
+  if (favorites.length === 0) {
+    favoritesGrid.innerHTML = '<p>No favorites added yet.</p>';
+  } else {
+    favorites.forEach(movie => {
+      const card = document.createElement("div");
+      card.className = "movie-card";
+      card.innerHTML = `
+        <div class="movie-poster">${movie.title.charAt(0)}</div>
+        <div class="movie-info">
+          <div class="movie-title">${movie.title}</div>
+          <div class="movie-genre">${movie.genre}</div>
+          <div class="movie-rating">
+            <span class="rating-stars">${'★'.repeat(movie.rating)}${'☆'.repeat(5 - movie.rating)}</span>
+            <span>${movie.rating}/5</span>
+          </div>
+          <button class="icon-btn" onclick="removeFavorite('${movie.title}')"><i class="fas fa-trash"></i> Remove</button>
+        </div>
+      `;
+      favoritesGrid.appendChild(card);
+    });
+  }
+}
+
+function removeFavorite(title) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  favorites = favorites.filter(movie => movie.title !== title);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  renderFavoritesPage();
+}

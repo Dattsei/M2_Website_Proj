@@ -1,0 +1,79 @@
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: 'Helvetica Neue', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 2rem;
+}
+
+.subscription-container h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subscription-container p {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.plans {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.plan-card {
+  background-color: #111;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 250px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+  border-color: #e50914;
+}
+
+.plan-card.selected {
+  border-color: #e50914;
+  background-color: #1c1c1c;
+}
+
+.plan-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.plan-card p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #e50914;
+}
+
+.plan-card ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #bbb;
+}
+
+.continue-btn {
+  margin-top: 2rem;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background-color: #e50914;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.continue-btn:hover {
+  background-color: #f40612;
+}
