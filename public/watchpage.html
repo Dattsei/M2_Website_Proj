@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watch - Nstream</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="styles.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="video-container" id="videoContainer">
+    <video class="video-player" id="moviePlayer" preload="metadata">
+      <source id="videoSource" src="assets/videos/main background.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="video-overlay" id="videoOverlay">
+      <div class="top-controls">
+        <button class="back-btn" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="video-info">
+          <div class="video-title" id="movieTitle">Main Background</div>
+          <div class="video-meta">
+            <span id="movieGenre">Demo</span> • 
+            <span id="movieRating">HD</span> • 
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-controls">
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+          <div class="progress-handle"></div>
+        </div>
+
+        <div class="controls-row">
+          <div class="left-controls">
+            <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="control-btn" onclick="skipTime(-10)">
+              <i class="fas fa-backward"></i>
+            </button>
+            <button class="control-btn" onclick="skipTime(10)">
+              <i class="fas fa-forward"></i>
+            </button>
+            <div class="volume-container">
+              <button class="control-btn" id="volumeBtn" onclick="toggleMute()">
+                <i class="fas fa-volume-up"></i>
+              </button>
+              <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+            </div>
+            <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+          </div>
+
+          <div class="right-controls">
+            <button class="control-btn" onclick="toggleSettings()">
+              <i class="fas fa-cog"></i>
+            </button>
+            <button class="control-btn" onclick="toggleFullscreen()">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-menu" id="settingsMenu">
+        <div class="settings-item" onclick="showQualityMenu()">
+          Quality <span id="currentQuality">Auto</span>
+          <div class="settings-submenu" id="qualityMenu">
+            <div class="resolution-item active" data-quality="auto" onclick="setQuality('auto')">Auto</div>
+            <div class="resolution-item" data-quality="1080p" onclick="setQuality('1080p')">1080p</div>
+            <div class="resolution-item" data-quality="720p" onclick="setQuality('720p')">720p</div>
+            <div class="resolution-item" data-quality="480p" onclick="setQuality('480p')">480p</div>
+          </div>
+        </div>
+        <div class="settings-item" onclick="toggleSubtitles()">
+          Subtitles <span>Off</span>
+        </div>
+        <div class="settings-item" onclick="adjustPlaybackSpeed()">
+          Speed <span id="currentSpeed">1x</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
