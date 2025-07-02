@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NStream - Payment Methods</title>
+    <link rel="stylesheet" href="css/paymentmethod.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="back-btn">← Back</button>
+            <h1 class="logo">NSTREAM</h1>
+            <button class="sign-out">Sign Out</button>
+        </header>
+
+        <main>
+            <div class="step-indicator">STEP 3 OF 3</div>
+            <div class="lock-icon">🔒</div>
+            
+            <h2>Choose how to pay</h2>
+            <p class="subtitle">Your payment is encrypted and you can change how you pay anytime.</p>
+            <div class="security-text">
+                <strong>Secure for peace of mind.</strong><br>
+                Cancel easily online.
+            </div>
+
+            <div class="encryption-badge">
+                🔒 End-to-end encrypted
+            </div>
+
+            <!-- Payment Method Tabs -->
+            <div class="payment-tabs">
+                <button class="tab-btn active" data-method="card">💳 Card</button>
+                <button class="tab-btn" data-method="digital">📱 Digital</button>
+                <button class="tab-btn" data-method="mobile">📞 Mobile</button>
+            </div>
+
+            <!-- Payment Forms -->
+            <div class="payment-forms">
+                <!-- Card Form -->
+                <div class="payment-form card-form active">
+                    <h3>Credit or Debit Card</h3>
+                    <div class="accepted-cards">
+                        <p class="support-title">Supported Credit/Debit Cards:</p>
+                        <div class="provider-list">
+                            <span class="card-type visa">VISA</span>
+                            <span class="card-type mastercard">MC</span>
+                            <span class="card-type amex">AMEX</span>
+                            <span class="card-type discover">DISC</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" placeholder="1234 5678 9012 3456" class="form-input" id="card-number" maxlength="19">
+                        <label>Card Number</label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" placeholder="MM/YY" class="form-input" id="card-expiry" maxlength="5">
+                            <label>Expiry Date</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="123" class="form-input" id="card-cvv" maxlength="4">
+                            <label>CVV</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" placeholder="John Doe" class="form-input" id="card-name">
+                        <label>Cardholder Name</label>
+                    </div>
+                </div>
+
+                <!-- Digital Wallet Form -->
+                <div class="payment-form digital-form">
+                    <h3>Digital Wallet</h3>
+                    
+                    <div class="supported-providers">
+                        <p class="support-title">Supported Digital Wallets:</p>
+                        <div class="provider-list">
+                            <span class="provider-badge gcash">GCash</span>
+                            <span class="provider-badge maya">Maya</span>
+                            <span class="provider-badge grab">GrabPay</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="phone-input">
+                            <select class="country-select" id="digital-country">
+                                <option value="+63">Philippines (+63)</option>
+                                <option value="+65">Singapore (+65)</option>
+                                <option value="+60">Malaysia (+60)</option>
+                                <option value="+66">Thailand (+66)</option>
+                            </select>
+                            <input type="text" placeholder="9123456789" class="form-input" id="digital-phone" maxlength="10">
+                        </div>
+                        <label>Mobile Number (10 digits)</label>
+                    </div>
+                </div>
+
+                <!-- Mobile Payment Form -->
+                <div class="payment-form mobile-form">
+                    <h3>Mobile Payment</h3>
+                    
+                    <div class="supported-providers">
+                        <p class="support-title">Supported Mobile Carriers:</p>
+                        <div class="provider-list">
+                            <span class="provider-badge smart">Smart</span>
+                            <span class="provider-badge globe">Globe</span>
+                            <span class="provider-badge tnt">TNT</span>
+                            <span class="provider-badge dito">Dito</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="phone-input">
+                            <select class="country-select" id="mobile-country">
+                                <option value="+63">Philippines (+63)</option>
+                                <option value="+65">Singapore (+65)</option>
+                                <option value="+60">Malaysia (+60)</option>
+                                <option value="+66">Thailand (+66)</option>
+                            </select>
+                            <input type="text" placeholder="9123456789" class="form-input" id="mobile-phone" maxlength="10">
+                        </div>
+                        <label>Mobile Number (10 digits)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Info -->
+            <div class="plan-info">
+                <div class="plan-details">
+                    <strong>₱199/month</strong>
+                    <div class="plan-name">Basic Plan</div>
+                </div>
+                <button class="change-plan">Change</button>
+            </div>
+
+            <!-- Terms -->
+            <div class="terms">
+                <p>By checking below, you agree to our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>. You must be 18+ to subscribe.</p>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="agree-checkbox">
+                    I agree to the terms and conditions
+                </label>
+            </div>
+
+            <button class="start-membership" id="start-btn" disabled>Start Membership</button>
+            <p class="redirect-note"></p>
+        </main>
+    </div>
+
+    <!-- Plan Selection Modal -->
+    <div id="plan-modal" class="modal">
+        <div class="modal-content">
+            <h3>Choose Your Plan</h3>
+            <div class="plan-options">
+                <div class="plan-option" data-plan="basic">
+                    <h4>Basic</h4>
+                    <p>₱199/month</p>
+                    <small>720p • 1 screen</small>
+                </div>
+                <div class="plan-option" data-plan="standard">
+                    <h4>Standard</h4>
+                    <p>₱399/month</p>
+                    <small>1080p • 2 screens</small>
+                </div>
+                <div class="plan-option" data-plan="premium">
+                    <h4>Premium</h4>
+                    <p>₱549/month</p>
+                    <small>4K+HDR • 4 screens</small>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn">Cancel</button>
+                <button class="modal-btn confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/paymentmethod.js"></script>
+</body>
+</html>

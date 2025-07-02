@@ -182,13 +182,16 @@ function createContentCard(item) {
   card.className = 'content-card';
   card.onclick = () => openModal(item);
   
+  // Determine the display type text
+  const displayType = item.type === 'series' ? 'SERIES' : item.type.toUpperCase();
+  
   card.innerHTML = `
     <div class="card-image">
       <i class="fas fa-${item.type === 'movie' ? 'film' : 'tv'}"></i>
     </div>
     <div class="card-content">
       <h3 class="card-title">${item.title}</h3>
-      <div class="card-type">${item.type.toUpperCase()}</div>
+      <div class="card-type">${displayType}</div>
       <div class="card-info">
         <span class="card-genre">${item.genre.toUpperCase()}</span>
         <span>${item.year}</span>
@@ -210,11 +213,14 @@ function openModal(item) {
   const modalDescription = document.getElementById('modalDescription');
   const episodesSection = document.getElementById('episodesSection');
   const episodesList = document.getElementById('episodesList');
+  const typeDisplay = item.type === 'series' ? 'SERIES' : item.type.toUpperCase();
   
   // basic info
   modalTitle.textContent = item.title;
   modalType.textContent = item.type.toUpperCase();
   modalDescription.textContent = item.description;
+  modalType.textContent = typeDisplay;
+
   
   // info values
   document.getElementById('modalGenre').textContent = item.genre.charAt(0).toUpperCase() + item.genre.slice(1);
