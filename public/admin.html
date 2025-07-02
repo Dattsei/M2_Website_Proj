@@ -1,359 +1,446 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NStream Admin Dashboard</title>
-<link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
-
 <body>
   <div class="admin-container">
-    <!-- Sidebar for desktop -->
-    <aside class="sidebar desktop">
-      <h1 class="title">NStream Admin</h1>
-      <nav class="nav-links">
-        <a href="#" onclick="showSection('dashboard')" class="nav-link">Dashboard</a>
-        <a href="#" onclick="showSection('content')" class="nav-link">Manage Content</a>
-        <a href="#" onclick="showSection('users')" class="nav-link">Manage Users</a>
-        <a href="#" onclick="showSection('subscriptions')" class="nav-link">Subscriptions</a>
-        <a href="#" onclick="showSection('reviews')" class="nav-link">Reviews</a>
-        <a href="#" onclick="showSection('analytics')" class="nav-link">Analytics</a>
-        <a href="/" class="logout">Logout</a>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h1 class="logo">NStream Admin</h1>
+      <nav class="nav">
+        <a href="#" onclick="showSection('dashboard')" class="nav-item active">Dashboard</a>
+        <a href="#" onclick="showSection('content')" class="nav-item">Content</a>
+        <a href="#" onclick="showSection('users')" class="nav-item">Users</a>
+        <a href="#" onclick="showSection('subscriptions')" class="nav-item">Subscriptions</a>
+        <a href="#" onclick="showSection('analytics')" class="nav-item">Analytics</a>
       </nav>
+      <a href="/" class="logout-btn">Logout</a>
     </aside>
 
-    <!-- Mobile Dropdown -->
-    <div class="sidebar mobile">
-      <h1 class="title">NStream Admin</h1>
-      <label for="mobile-nav">Select Section:</label>
-      <select id="mobile-nav" onchange="showSection(this.value)">
-        <option value="dashboard">Dashboard</option>
-        <option value="content">Manage Content</option>
-        <option value="users">Manage Users</option>
-        <option value="subscriptions">Subscriptions</option>
-        <option value="reviews">Reviews</option>
-        <option value="analytics">Analytics</option>
-      </select>
-      <a href="index.html" class="logout-btn">Logout</a>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard -->
+      <section id="dashboard" class="section">
+        <h2>Dashboard Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Users</h3>
+            <span id="userCount" class="stat-number">0</span>
+          </div>
+          <div class="stat-card">
+            <h3>Active Subscriptions</h3>
+            <span id="subCount" class="stat-number">0</span>
+          </div>
+          <div class="stat-card">
+            <h3>Total Movies</h3>
+            <span id="movieCount" class="stat-number">0</span>
+          </div>
+          <div class="stat-card">
+            <h3>Total Series</h3>
+            <span id="seriesCount" class="stat-number">0</span>
+          </div>
+          <div class="stat-card">
+            <h3>Total Episodes</h3>
+            <span id="episodeCount" class="stat-number">0</span>
+          </div>
+          <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <span class="stat-number">$2,450</span>
+          </div>
+        </div>
+        
+        <div class="recent-activity">
+          <h3>Recent Activity</h3>
+          <div class="activity-list">
+            <div class="activity-item">Loading recent activities...</div>
+          </div>
+        </div>
+      </section>
 
-  <!-- Main Content -->
-  <main>
-    <!-- Dashboard -->
-    <div id="dashboard" class="section">
-      <h2 class="dashboard-title">Welcome, Admin</h2>
-      <div class="dashboard-grid">
-        <div class="dashboard-box">
-          <h3>Total Users</h3>
-          <p id="userCount">0</p>
+      <!-- Content Management -->
+      <section id="content" class="section hidden">
+        <div class="section-header">
+          <h2>Manage Content</h2>
+          <button onclick="openContentModal()" class="btn-primary">Add Content</button>
         </div>
-        <div class="dashboard-box">
-          <h3>Active Subscriptions</h3>
-          <p id="subCount">0</p>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Release Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contentTable"></tbody>
+          </table>
         </div>
-        <div class="dashboard-box">
-          <h3>Movies/Shows</h3>
-          <p id="contentCount">0</p>
+      </section>
+
+      <!-- Users Management -->
+      <section id="users" class="section hidden">
+        <div class="section-header">
+          <h2>Manage Users</h2>
+          <button onclick="openUserModal()" class="btn-primary">Add User</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Subscription</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Subscriptions -->
+      <section id="subscriptions" class="section hidden">
+        <h2>Subscription Management</h2>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Expires</th>
+              </tr>
+            </thead>
+            <tbody id="subscriptionTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+    <!-- Analytics Section - Replace the existing analytics section in admin.html -->
+    <section id="analytics" class="section hidden">
+      <h2>Analytics Dashboard</h2>
+      
+      <!-- Quick Stats -->
+      <div class="analytics-overview">
+        <div class="stats-row">
+          <div class="analytics-stat-card">
+            <h4>Total Views</h4>
+            <span id="totalViews" class="analytics-number">0</span>
+          </div>
+          <div class="analytics-stat-card">
+            <h4>Average Rating</h4>
+            <span id="avgRating" class="analytics-number">0.0</span>
+          </div>
+          <div class="analytics-stat-card">
+            <h4>Total Content</h4>
+            <span id="totalContent" class="analytics-number">0</span>
+          </div>
+          <div class="analytics-stat-card">
+            <h4>Active Users</h4>
+            <span id="activeUsers" class="analytics-number">0</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Manage Content -->
-    <div id="content" class="section hidden">
-      <div class="content-header">
-        <h3>Manage Content</h3>
-        <button onclick="openMovieModal()" class="btn-add">+ Add Movie</button>
-      </div>
-      <table class="content-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Release Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="contentTable"></tbody>
-      </table>
-    </div>
-
-    <!-- Upload/Edit Modal -->
-    <div id="uploadModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="modalTitle">Upload</h3>
-        <form id="movieForm" onsubmit="submitMovie(event)">
-          <input type="hidden" id="movieId">
-
-          <!-- Type First -->
-          <label for="contentType">Type</label>
-          <select id="contentType" onchange="toggleEpisodeButton()" required>
-            <option value="Movie">Movie</option>
-            <option value="Series">Series</option>
-          </select>
-
-          <label for="movieTitle">Title</label>
-          <input type="text" id="movieTitle" placeholder="Title" required>
-
-          <label for="movieDesc">Description</label>
-          <textarea id="movieDesc" placeholder="Description" required></textarea>
-
-          <label for="studio">Studio</label>
-          <input type="text" id="studio" placeholder="Studio" required>
-
-          <label>Select Genres</label>
-          <div id="genreButtons" class="genre-buttons"></div>
-          <input type="hidden" id="genreList" required>
-          <p id="selectedGenres" class="selected-genres hidden"></p>
-
-          <label for="movieRating">Parental Rating</label>
-          <select id="movieRating" required>
-            <option value="G">G</option>
-            <option value="PG">PG</option>
-            <option value="PG-13">PG-13</option>
-            <option value="R">R</option>
-            <option value="18+">18+</option>
-          </select>
-
-          <label for="posterImage">Poster Image</label>
-          <input type="file" id="posterImage" accept="image/*">
-          <div id="posterPreview" class="poster-preview hidden">
-            <img src="" alt="Poster Preview">
-            <button type="button" onclick="clearPoster()">Remove Poster</button>
+      <!-- Analytics Cards Grid -->
+      <div class="analytics-grid">
+        <!-- Popular Content -->
+        <div class="analytics-card">
+          <h3>Most Popular</h3>
+          <div id="popularContent" class="analytics-list">
+            <div class="loading-state">No data available</div>
           </div>
+        </div>
 
-          <!-- Trailer for Movie and Series -->
-          <label for="trailerLink">Trailer Video</label>
-          <input type="text" id="trailerLink" placeholder="Trailer Video Link or ID" required>
-
-          <!-- Main Video for Movie only -->
-          <div id="movieVideoField">
-            <label for="videoLink">Video Link or ID</label>
-            <input type="text" id="videoLink" placeholder="Video Link or ID">
+        <!-- Most Viewed -->
+        <div class="analytics-card">
+          <h3>Most Viewed</h3>
+          <div id="mostViewed" class="analytics-list">
+            <div class="loading-state">No data available</div>
           </div>
+        </div>
 
-          <label for="releaseDate">Release Date</label>
-          <input type="date" id="releaseDate" required>
-
-          <!-- Episode management link -->
-          <div id="episodeManagerBtn" class="hidden">
-            <label>Episodes</label>
-            <button type="button" onclick="openEpisodeManager()">➕ Manage Episodes</button>
-            <ul id="episodeListPreview"></ul>
+        <!-- Highest Rated -->
+        <div class="analytics-card">
+          <h3>Highest Rated</h3>
+          <div id="highestRated" class="analytics-list">
+            <div class="loading-state">No data available</div>
           </div>
+        </div>
 
-          <div class="form-actions">
-            <button type="button" onclick="clearForm()" class="clear-btn">Clear All</button>
-            <div>
-              <button type="button" onclick="toggleUploadModal(false)" class="cancel-btn">Cancel</button>
-              <button type="submit" class="save-btn">Save</button>
+        <!-- Top Genres -->
+        <div class="analytics-card">
+          <h3>Top Genres</h3>
+          <div id="topGenres" class="analytics-list">
+            <div class="loading-state">No data available</div>
+          </div>
+        </div>
+
+        <!-- Content Distribution -->
+        <div class="analytics-card">
+          <h3>Content Split</h3>
+          <div class="distribution-stats">
+            <div class="dist-item">
+              <span class="dist-label">Movies</span>
+              <span id="movieCount" class="dist-count">0</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-label">Series</span>
+              <span id="seriesCount" class="dist-count">0</span>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Episode Management Modal -->
-    <div id="episodeModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="episodeModalTitle">Manage Episode</h3>
-        <form id="episodeForm" onsubmit="saveEpisode(event)">
-          <input type="hidden" id="editingEpisodeIndex">
-
-          <label>Episode Title</label>
-          <input type="text" id="episodeTitleInput" required>
-
-          <label>Episode Description</label>
-          <textarea id="episodeDescInput" required></textarea>
-
-          <label>Video</label>
-          <input type="text" id="episodeVideoInput" placeholder="Video Link or ID" required>
-
-          <label>Release Date</label>
-          <input type="date" id="episodeReleaseInput" required>
-
-          <label>Episode Poster</label>
-          <input type="file" id="episodePosterInput" accept="image/*">
-          <div id="episodePosterPreview" class="poster-preview hidden">
-            <img src="" alt="Episode Poster Preview">
-            <button type="button" onclick="clearEpisodePoster()">Remove</button>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" onclick="closeEpisodeModal()" class="cancel-btn">Cancel</button>
-            <button type="submit" class="save-btn">Save Episode</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Episode Preview Modal -->
-    <div id="episodePreviewModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="episodeTitlePreview">Episode Details</h3>
-        <img id="episodePosterPreview" src="" alt="Episode Poster" style="width:100%; max-height:300px; object-fit:contain; margin-bottom:1rem">
-        <p><strong>Episode:</strong> <span id="episodeNumberPreview"></span></p>
-        <p><strong>Title:</strong> <span id="episodeTitleText"></span></p>
-        <p><strong>Description:</strong> <span id="episodeDescText"></span></p>
-        <p><strong>Video:</strong> <span id="episodeVideoPreview"></span></p>
-        <p><strong>Release Date:</strong> <span id="episodeReleasePreview"></span></p>
-        <button type="button" onclick="closeEpisodePreview()">Close</button>
-      </div>
-    </div>
-
-    <!-- Content Preview Modal -->
-    <div id="contentPreviewModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="previewName">Title</h3>
-        <img id="previewPoster" src="" alt="Poster" style="width:100%; max-height:300px; object-fit:contain; margin:1rem 0">
-        <p id="previewDesc">Description</p>
-        <p><strong>Studio:</strong> <span id="previewStudio"></span></p>
-        <p><strong>Genres:</strong> <span id="previewGenres"></span></p>
-        <p><strong>Rating:</strong> <span id="previewRating"></span></p>
-        <p><strong>Release Date:</strong> <span id="previewRelease"></span></p>
-        <div id="previewEpisodesContainer" class="hidden">
-          <h4>Episodes:</h4>
-          <ul id="previewEpisodesList"></ul>
         </div>
-        <button type="button" onclick="closeContentPreview()">Close</button>
-      </div>
-    </div>
 
-
-    <!-- Manage Users -->
-    <div id="users" class="section hidden">
-      <h3 class="section-title">Manage Users</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="userTable">
-          <!-- JS will populate here -->
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Edit User Modal -->
-    <div id="userModal" class="user-modal user-modal-hidden">
-      <div class="modal-content">
-        <h3>Edit User</h3>
-        <form id="userForm" onsubmit="submitUserEdit(event)">
-          <input type="hidden" id="editUserIndex">
-
-          <label for="editUserEmail">Email</label>
-          <input type="email" id="editUserEmail" required>
-
-          <label for="editUserName">Full Name</label>
-          <input type="text" id="editUserName" required>
-
-          <label for="editUserStatus">Status</label>
-          <select id="editUserStatus" required>
-            <option value="Active">Active</option>
-            <option value="Suspended">Suspended</option>
-          </select>
-
-          <label for="editUserPhone">Phone Number</label>
-          <input type="text" id="editUserPhone" required>
-
-          <label for="editUserAddress">Address</label>
-          <input type="text" id="editUserAddress" required>
-
-          <label for="editUserSubscription">Subscription</label>
-          <select id="editUserSubscription" required>
-            <option value="Explorer">Explorer (Free)</option>
-            <option value="Viewer">Viewer (Basic)</option>
-            <option value="Binger">Binger (Standard)</option>
-            <option value="UltraPass">UltraPass (Premium)</option>
-          </select>
-
-          <div class="modal-actions">
-            <button type="button" onclick="toggleUserModal(false)">Cancel</button>
-            <button type="submit">Save</button>
+        <!-- Subscription Distribution -->
+        <div class="analytics-card">
+          <h3>Subscriptions</h3>
+          <div class="subscription-stats">
+            <div class="sub-stat-item">
+              <span class="sub-label basic">Basic</span>
+              <span id="basicCount" class="sub-count">0</span>
+            </div>
+            <div class="sub-stat-item">
+              <span class="sub-label standard">Standard</span>
+              <span id="standardCount" class="sub-count">0</span>
+            </div>
+            <div class="sub-stat-item">
+              <span class="sub-label premium">Premium</span>
+              <span id="premiumCount" class="sub-count">0</span>
+            </div>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- User Profile View Modal -->
-    <div id="userProfileModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>User Profile</h3>
-        <div class="profile-picture" style="text-align:center; margin-bottom: 1rem;">
-          <img src="https://via.placeholder.com/100" alt="Profile Picture" style="width:100px; height:100px; border-radius:50%; object-fit:cover">
-        </div>
-        <p><strong>Email:</strong> <span id="userProfileEmail"></span></p>
-        <p><strong>Full Name:</strong> <span id="userProfileName"></span></p>
-        <p><strong>Status:</strong> <span id="userProfileStatus"></span></p>
-        <p><strong>Phone Number:</strong> <span id="userProfilePhone"></span></p>
-        <p><strong>Address:</strong> <span id="userProfileAddress"></span></p>
-        <p><strong>Subscription:</strong> <span id="userProfileSubscription"></span></p>
-        <div style="text-align: right;">
-          <button onclick="closeUserProfile()">Close</button>
         </div>
       </div>
-    </div>
+    </section>
+    </main>
+  </div>
 
+  <!-- Content Modal -->
+  <div id="contentModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="contentModalTitle">Add Content</h3>
+        <button onclick="closeContentModal()" class="btn-close">×</button>
+      </div>
+      
+      <form id="contentForm" onsubmit="saveContent(event)">
+        <input type="hidden" id="contentId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Content Type</label>
+            <select id="contentType" onchange="toggleEpisodeSection()" required>
+              <option value="Movie">Movie</option>
+              <option value="Series">Series</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="contentTitle" required>
+          </div>
+        </div>
 
-    <!-- Subscriptions Section -->
-    <div id="subscriptions" class="section hidden">
-      <h3 class="section-title">Subscriptions</h3>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="contentDescription" rows="3" required></textarea>
+        </div>
 
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Plan</th>
-            <th>Expires On</th>
-          </tr>
-        </thead>
-        <tbody id="subscriptionTable">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Studio</label>
+            <input type="text" id="contentStudio" required>
+          </div>
+          <div class="form-group">
+            <label>Release Date</label>
+            <input type="date" id="contentRelease" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Genres</label>
+          <div id="genreButtons" class="genre-grid"></div>
+          <input type="hidden" id="selectedGenres" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Rating</label>
+            <select id="contentRating" required>
+              <option value="G">G - General</option>
+              <option value="PG">PG - Parental Guidance</option>
+              <option value="PG-13">PG-13 - Parents Strongly Cautioned</option>
+              <option value="R">R - Restricted</option>
+              <option value="18+">18+ - Adults Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="image-upload-section">
+          <div class="form-group">
+            <label>Poster Images (Max 5)</label>
+            <input type="file" id="posterFiles" accept="image/*" multiple>
+            <div id="posterPreviews" class="image-previews"></div>
+          </div>
           
-        </tbody>
-      </table>
-    </div>
+          <div class="form-group">
+            <label>Thumbnail Image</label>
+            <input type="file" id="thumbnailFile" accept="image/*">
+            <div id="thumbnailPreview" class="image-preview"></div>
+          </div>
+        </div>
 
+        <div class="form-group">
+          <label>Trailer Video</label>
+          <input type="file" id="trailerFile" accept="video/*" required>
+        </div>
 
-    <!-- Reviews -->
-    <div id="reviews" class="section hidden">
-      <h3 class="section-title">Reviews</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Movie</th>
-            <th>Rating</th>
-            <th>Comment</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Inception</td><td>5 Stars</td><td>Mind-blowing movie!</td><td><button class="btn-delete">Delete</button></td></tr>
-          <tr><td>Frozen</td><td>4 Stars</td><td>Great for kids.</td><td><button class="btn-delete">Delete</button></td></tr>
-        </tbody>
-      </table>
-    </div>
+        <div id="movieVideoSection" class="form-group">
+          <label>Movie Video</label>
+          <input type="file" id="movieVideoFile" accept="video/*">
+        </div>
 
-    <!-- Analytics -->
-    <div id="analytics" class="section hidden">
-      <h3 class="section-title">Analytics</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Most Watched</td><td>Inception, Stranger Things</td></tr>
-          <tr><td>Peak Hours</td><td>8PM - 11PM</td></tr>
-        </tbody>
-      </table>
+        <div id="episodeSection" class="hidden">
+          <div class="section-divider">
+            <h4>Episodes</h4>
+            <button type="button" onclick="openEpisodeModal()" class="btn-secondary">Add Episode</button>
+          </div>
+          <div id="episodeList" class="episode-list"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" onclick="clearContentForm()" class="btn-secondary">Clear</button>
+          <button type="button" onclick="closeContentModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Content</button>
+        </div>
+      </form>
     </div>
-  </main>
-  
-  <script src="scripts/admin.js" defer></script>
+  </div>
+
+  <!-- Episode Modal -->
+  <div id="episodeModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Episode</h3>
+        <button onclick="closeEpisodeModal()" class="btn-close">×</button>
+      </div>
+      
+      <form id="episodeForm" onsubmit="saveEpisode(event)">
+        <input type="hidden" id="editingEpisodeIndex">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Episode Title</label>
+            <input type="text" id="episodeTitle" required>
+          </div>
+          <div class="form-group">
+            <label>Release Date</label>
+            <input type="date" id="episodeRelease" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="episodeDescription" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Episode Thumbnail</label>
+          <input type="file" id="episodeThumbnail" accept="image/*">
+          <div id="episodeThumbnailPreview" class="image-preview"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Episode Video</label>
+          <input type="file" id="episodeVideo" accept="video/*" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" onclick="closeEpisodeModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Episode</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div id="userModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="userModalTitle">Add User</h3>
+        <button onclick="closeUserModal()" class="btn-close">×</button>
+      </div>
+      
+      <form id="userForm" onsubmit="saveUser(event)">
+        <input type="hidden" id="userId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="userName" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="userEmail" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="userPhone" required>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="userStatus" required>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="userAddress" required>
+          </div>
+          <div class="form-group">
+            <label>Subscription</label>
+            <select id="userSubscription" required>
+              <option value="Free">Explorer (Free)</option>
+              <option value="Basic">Viewer (Basic)</option>
+              <option value="Standard">Binger (Standard)</option>
+              <option value="Premium">UltraPass (Premium)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" onclick="closeUserModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal hidden">
+    <div class="modal-content preview-modal">
+      <div class="modal-header">
+        <h3 id="previewModalTitle">Preview</h3>
+        <button onclick="closePreviewModal()" class="btn-close">×</button>
+      </div>
+      <div id="previewContent" class="preview-content"></div>
+      <div class="modal-actions">
+        <button onclick="closePreviewModal()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/admin.js"></script>
 </body>
 </html>

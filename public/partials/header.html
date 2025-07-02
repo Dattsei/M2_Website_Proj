@@ -1,0 +1,108 @@
+<header class="header" id="header">
+  <nav class="nav-container">
+    <div class="logo">
+      <a href="/" class="logo-link">
+        <img src="assets/images/nstreamlogo.png" alt="Nstream Logo" class="logo-img" id="logoImg">
+      </a>
+    </div>
+    
+    <!-- Mobile menu toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <ul class="nav-links" id="navLinks">
+      <li><a href="mainpage.html" class="nav-link">Home</a></li>
+      <li><a href="#" class="nav-link" data-filter="movie">Movies</a></li>
+      <li><a href="#" class="nav-link" data-filter="series">Series</a></li>
+      <li><a href="#" class="nav-link" data-filter="trending">Trending</a></li>
+      <li><a href="favorites.html" class="nav-link">My List</a></li>
+    </ul>
+    
+    <div class="nav-right">
+      <button class="search-btn" id="searchBtn" title="Search" aria-label="Toggle search">
+        <i class="fas fa-search"></i>
+      </button>
+      <div class="profile-menu">
+        <button class="profile-btn" id="profileBtn" aria-label="Profile menu">
+          <img src="assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
+        </button>
+        <div id="profileDropdown" class="dropdown profile-dropdown hidden">
+          <ul>
+            <li id="manageProfilesOption">
+              <i class="fas fa-pencil-alt"></i> Manage Profiles
+            </li>
+            <li id="switchProfileOption">
+              <i class="fas fa-right-left"></i> Switch Profile
+            </li>
+            <li id="accountOption">
+              <i class="fas fa-user-cog"></i> Account
+            </li>
+            <li id="helpCenterOption">
+              <i class="fas fa-question-circle"></i> Help
+            </li>
+            <hr />
+            <li id="signOutOption">
+              <i class="fas fa-sign-out-alt"></i> Sign out
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search movies, TV shows..." 
+          autocomplete="off"
+        >
+        <button class="search-close" id="searchClose" aria-label="Close search">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="search-results" id="searchResults">
+        <!-- Search results will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Profile Modal -->
+  <div class="modal" id="changeProfileModal" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeChangeProfileModal()">&times;</button>
+      <h2>Switch Profile</h2>
+      <div id="changeProfileList" class="profile-list">
+        <!-- Profiles will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Center Modal -->
+  <div class="modal" id="helpCenterModal" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeHelpCenter()">&times;</button>
+      <h2>Help Center</h2>
+      <div class="help-content">
+        <p>Welcome to NStream Help Center!</p>
+        <h3>Contact Support</h3>
+        <p>Email: support@nstream.com</p>
+        <p>Phone: 1-800-NSTREAM</p>
+        <h3>Common Issues</h3>
+        <ul>
+          <li>Playback problems</li>
+          <li>Account management</li>
+          <li>Billing questions</li>
+          <li>Technical support</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
