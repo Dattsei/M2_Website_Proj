@@ -17,7 +17,8 @@
         <p>Email: <strong>user@example.com</strong></p>
         <p>Password: ******** <button class="link-btn" onclick="editPassword()">Change</button></p>
         <p>Plan: <strong id="planDisplay">Premium</strong> 
-  <a href="subscription.html" class="link-btn">Change Plan</a>
+  <button class="link-btn" onclick="editPlan()">Change Plan</button>
+
 </p>
 
 
@@ -31,16 +32,6 @@
         <!-- Will be loaded from localStorage -->
       </div>
     </section>
-
-    <section class="account-section">
-      <h2>Settings</h2>
-      <ul class="settings-list">
-        <li><i class="fas fa-bell"></i> Notifications</li>
-        <li><i class="fas fa-user-lock"></i> Parental Controls</li>
-        <li><i class="fas fa-history"></i> Viewing Activity</li>
-      </ul>
-    </section>
-  </div>
 <!-- Password Modal -->
 <div id="passwordModal" class="modal" style="display:none;">
   <div class="modal-content">
@@ -55,71 +46,39 @@
 <div id="planModal" class="modal" style="display:none;">
   <div class="modal-content">
     <span class="modal-close" onclick="closePlanModal()">&times;</span>
-    <h2>Select Plan</h2>
-    <select id="planSelect">
-      <option value="Basic">Basic</option>
-      <option value="Standard">Standard</option>
-      <option value="Premium">Premium</option>
-    </select>
-    <button class="link-btn" onclick="savePlan()">Save</button>
+    <h2>Select Your Plan</h2>
+    <div class="plan-options">
+      <div class="plan-card" onclick="selectPlan('Basic')">
+        <h3>Basic</h3>
+        <ul>
+          <li>Good video quality</li>
+          <li>Resolution: 480p</li>
+          <li>Watch on 1 screen</li>
+        </ul>
+      </div>
+      <div class="plan-card" onclick="selectPlan('Standard')">
+        <h3>Standard</h3>
+        <ul>
+          <li>Better video quality</li>
+          <li>Resolution: 1080p</li>
+          <li>Watch on 2 screens</li>
+        </ul>
+      </div>
+      <div class="plan-card" onclick="selectPlan('Premium')">
+        <h3>Premium</h3>
+        <ul>
+          <li>Best video quality</li>
+          <li>Resolution: 4K+HDR</li>
+          <li>Watch on 4 screens</li>
+        </ul>
+      </div>
+    </div>
+    <button class="link-btn" onclick="saveSelectedPlan()">Done</button>
   </div>
 </div>
 
-  <script>
-  function editPassword() {
-    document.getElementById("passwordModal").style.display = "block";
-  }
 
-  function closePasswordModal() {
-    document.getElementById("passwordModal").style.display = "none";
-  }
-
-  function savePassword() {
-    const newPass = document.getElementById("newPassword").value;
-    if (newPass.length < 6) {
-      alert("Password must be at least 6 characters.");
-      return;
-    }
-    localStorage.setItem("userPassword", newPass);
-    alert("Password updated!");
-    closePasswordModal();
-  }
-
-  function editPlan() {
-    document.getElementById("planModal").style.display = "block";
-  }
-
-  function closePlanModal() {
-    document.getElementById("planModal").style.display = "none";
-  }
-
-  function savePlan() {
-    const plan = document.getElementById("planSelect").value;
-    localStorage.setItem("userPlan", plan);
-    document.getElementById("planDisplay").innerText = plan;
-    alert("Plan updated to " + plan);
-    closePlanModal();
-  }
-
-  // Load profiles from localStorage and plan
-  window.onload = () => {
-    const profiles = JSON.parse(localStorage.getItem("profiles")) || [];
-    const container = document.getElementById("profileList");
-
-    profiles.forEach((profile) => {
-      const div = document.createElement("div");
-      div.className = "profile-item";
-      div.innerHTML = `
-        <img src="${profile.avatar}" class="profile-avatar">
-        <span>${profile.name}</span>
-      `;
-      container.appendChild(div);
-    });
-
-    const currentPlan = localStorage.getItem("userPlan") || "Premium";
-    document.getElementById("planDisplay").innerText = currentPlan;
-  }
-</script>
+<script src="scripts/account.js"></script>
 
 </body>
 </html>

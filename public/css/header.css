@@ -23,7 +23,7 @@
 }
 
 .logo img {
-    height: 25px;
+    height: 60px;
     width: auto;
 }
 
@@ -74,33 +74,35 @@
     font-size: 0.8rem;
 }
 
-.login-btn, .signup-btn {
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 7px 17px;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-
-.login-btn {
-    background-color: transparent;
-    border: 1px solid #fff;
-}
-
-.signup-btn {
+/* Shared red button style for login & CTA */
+.login-btn,
+.cta-button {
     background-color: #e50914;
+    border: 1px solid #e50914;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-btn:hover,
+.cta-button:hover {
+    background-color: #fff;
+    color: #e50914;
     border: 1px solid #e50914;
 }
 
-.login-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+/* Optional larger login button look (like Netflix) */
+.login-btn {
+    padding: 0.75rem 2rem;
 }
 
-.signup-btn:hover {
-    background-color: #f40612;
-}
-
+/* Mobile styles */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -113,9 +115,11 @@
     .profile-menu {
         gap: 0.5rem;
     }
-    
-    .login-btn, .signup-btn {
+
+    .login-btn,
+    .signup-btn {
         padding: 5px 12px;
         font-size: 0.8rem;
+        height: 60px;
     }
-} 
+}

@@ -1,38 +1,73 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #141414;
-  color: white;
+/* Reset and base styles */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #000; /* Solid black background */
+  color: #fff;
+  line-height: 1.6;
   padding: 2rem;
 }
 
-.account-container {
-  max-width: 800px;
-  margin: auto;
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.container, .account-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
 .account-section {
   margin-bottom: 2rem;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #000000;
   padding-bottom: 1rem;
-}
-
-.account-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
 }
 
 .account-row p {
   margin: 0.5rem 0;
 }
 
-.link-btn {
-  background: none;
-  border: none;
-  color: #1db954;
-  cursor: pointer;
+.link-btn, .cta-button {
+  background-color: #e50914;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  margin-left: 1rem;
+  transition: background-color 0.3s ease;
 }
 
+.link-btn:hover, .cta-button:hover {
+  background-color: #f40612;
+}
+
+/* Profiles */
 .profile-list {
   display: flex;
   gap: 1rem;
@@ -48,74 +83,42 @@ body {
   border-radius: 10px;
 }
 
-.settings-list {
-  list-style: none;
-  padding: 0;
-}
-
-.settings-list li {
-  margin: 0.5rem 0;
-}
+/* Modal Styling */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-content {
-  background: #222;
-  padding: 2rem;
-  border-radius: 10px;
-  color: white;
-  width: 300px;
-  text-align: center;
-}
-
-.modal-content input,
-.modal-content select {
-  width: 100%;
-  padding: 0.5rem;
-  margin: 1rem 0;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: white;
-}
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  transition: opacity 0.3s ease;
 }
 
-.modal-box {
+.modal-content {
   background-color: #1c1c1c;
   padding: 2rem;
   border-radius: 10px;
   color: #fff;
   width: 100%;
   max-width: 400px;
-  position: relative;
   text-align: center;
+  position: relative;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  max-width: 900px;
+
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #fff;
 }
 
 .modal-close {
@@ -129,27 +132,92 @@ body {
   background: none;
 }
 
-.modal-content input,
-.modal-content select {
-  width: 100%;
-  padding: 0.75rem;
-  margin: 1rem 0;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
+.hidden {
+  display: none;
+}
+/* SELECT PLAN STYLES */
+.plan-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
 }
 
-.cta-btn {
-  background-color: #e50914;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.2s ease;
+.plan-card {
+    flex: 1;
+    min-width: 200px;
+    background: #2a2a2a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    text-align: left;
 }
 
-.cta-btn:hover {
-  background-color: #b00610;
+.plan-card:hover {
+    transform: translateY(-5px);
+    border-color: #e50914;
+}
+
+.plan-card.selected {
+    border: 2px solid #e50914;
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+}
+
+.plan-card h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.plan-card ul {
+    list-style: none;
+    padding-left: 0;
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.plan-card ul li {
+    margin-bottom: 0.5rem;
+}
+
+.plan-card-price {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.plan-modal-button {
+    margin-top: 2rem;
+    background-color: #e50914;
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    .plan-modal-button {
+  display: block;
+  margin: 2rem auto 0;
+}
+
+}
+
+.plan-modal-button:hover {
+    background-color: #ff1f30;
+}
+.plan-options {
+  display: flex;
+  flex-wrap: wrap; /* Wrap to next line if needed */
+  justify-content: center; /* Center-align horizontally */
+  gap: 1.5rem;
+  margin: 2rem 0;
 }

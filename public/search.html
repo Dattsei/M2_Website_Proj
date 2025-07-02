@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
-  <!-- Header -->
-<header class="header">
+  <header class="header">
     <nav class="nav-container">
-      <a href="#" class="logo">NSTREAM</a>
+     <div class="logo">
+        <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
+      </div>
       
       <div class="search-section">
         <input type="text" class="search-input" id="searchInput" placeholder="Search movies, TV shows..." oninput="handleSearch()">
@@ -31,18 +32,10 @@
         </ul>
       </div>
       
-      <button class="profile-btn">
-        <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #fff; position: relative;">
-          <span style="position: absolute; top: 2px; left: 6px; width: 4px; height: 4px; background: #e50914; border-radius: 50%;"></span>
-          <span style="position: absolute; top: 8px; left: 4px; width: 8px; height: 6px; background: #e50914; border-radius: 0 0 8px 8px;"></span>
-        </span>
-      </button>
     </nav>
 </header>
 
-  <!-- Main Content -->
   <main class="main-content">
-    <!-- Filters Section -->
     <div class="filters-section">
       <div class="filter-group">
         <span class="filter-label">Type:</span>
@@ -79,18 +72,14 @@
       </div>
     </div>
 
-    <!-- Results Info -->
     <div class="results-info" id="resultsInfo">
       Showing 12 results
     </div>
 
-    <!-- Content Grid -->
     <div class="content-grid" id="contentGrid">
-      <!-- Content populated by JavaScript -->
-    </div>
+      </div>
   </main>
 
-  <!-- Modal -->
   <div id="contentModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -176,8 +165,7 @@
         <div class="episodes-section" id="episodesSection" style="display: none;">
           <h3 class="episodes-title">Episodes</h3>
           <div id="episodesList">
-            <!-- Episodes populated by JavaScript -->
-          </div>
+            </div>
         </div>
       </div>
     </div>

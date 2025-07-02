@@ -1,89 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NStream - Watch TV Shows and Movies Online</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/hero.css">
-    <link rel="stylesheet" href="css/footer.css">
-</head>
-<body>
-    <!-- Header Section -->
-    <header class="header">
-        <nav class="nav-container">
-            <div class="logo">
-                <img src="assets/images/Nflix-logo.png" alt="NStream Logo">
-            </div>
-            <div class="nav-right">
-                <button class="search-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-                <button class="notifications-btn">
-                    <i class="fas fa-bell"></i>
-                </button>
-                <div class="profile-menu">
-                    <a href="/login" class="login-btn">Sign In</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>NStream - Watch TV Shows and Movies Online</title>
+      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/header.css">
+      <link rel="stylesheet" href="css/hero.css">
+      <link rel="stylesheet" href="css/footer.css">
+  </head>
+  <body style="background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('assets/images/background.jpg') no-repeat center center fixed; background-size: cover;">
+      <!-- Header Section -->
+      <header class="header">
+          <nav class="nav-container">
+              <div class="logo">
+                  <img src="assets/images/trans logo.png" alt="NStream Logo">
+              </div>
+              <div class="nav-right">
+                  <button class="search-btn">
+                      <i class="fas fa-search"></i>
+                  </button>
+                  <button class="notifications-btn">
+                      <i class="fas fa-bell"></i>
+                  </button>
+                  <div class="profile-menu">
+                      <a href="/login" class="login-btn">Sign In</a>
+                  </div>
+              </div>
+          </nav>
+      </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Unlimited movies, TV shows, and more</h1>
-            <h2>Watch anywhere. Cancel anytime.</h2>
-            <div class="cta-container">
-                <h3>Ready to watch? Enter your email to create or restart your membership.</h3>
-                <div class="email-signup">
-                    <form action="/register.html" method="GET">
-                        <input type="email" name="email" placeholder="Email address" required>
-                        <button type="submit" class="cta-button">Get Started <i class="fas fa-chevron-right"></i></button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+      <!-- Hero Section -->
+      <section class="hero">
+          <div class="hero-content">
+              <h1>Unlimited movies, TV shows, and more</h1>
+              <h2>Watch anywhere. Cancel anytime.</h2>
+              <div class="cta-container">
+                  <h3>Ready to watch? Enter your email to create or restart your membership.</h3>
+                  <div class="email-signup">
+    <form action="/register.html" method="GET" class="form-center">
+      <input type="email" name="email" placeholder="Email address" required>
+      <button type="submit" class="cta-button">Get Started <i class="fas fa-chevron-right"></i></button>
+    </form>
+  </div>
 
-    <!-- Features Section -->
+              </div>
+          </div>
+      </section>
+
     <section class="features">
-        <div class="feature">
-            <div class="feature-text">
-                <h2>Enjoy on your TV</h2>
-                <p>Watch on Smart TVs, PlayStation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.</p>
-            </div>
-            <div class="feature-image">
-                <img src="assets/images/tv.png" alt="TV">
-            </div>
-        </div>
-    </section>
+    <div class="features-container">
+      <h2 class="features-title">More Reasons to Join</h2>
+      <div class="features-grid">
 
-    <!-- Footer Section -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-top">
-                <p>Questions? Call 1-800-NETFLIX</p>
-            </div>
-            <div class="footer-links">
-                <div class="footer-column">
-                    <a href="/help">Help Center</a>
-                    <a href="/jobs">Jobs</a>
-                    <a href="/terms">Terms of Use</a>
-                    <a href="/privacy">Privacy</a>
-                </div>
-                <div class="footer-column">
-                    <a href="/account">Account</a>
-                    <a href="/redeem">Redeem Gift Cards</a>
-                    <a href="/preferences">Cookie Preferences</a>
-                    <a href="/corporate">Corporate Information</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+        <a href="login.html" class="feature-card">
+          <div class="feature-content">
+            <h3>Enjoy watching at an Affordable Price!</h3>
+            <p>Watching and enjoying movies or series without hurting your wallet.</p>
+          </div>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5l-1 1v2h8v-2l-1-1h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H3V5h18v10z"/>
+            </svg>
+          </div>
+        </a>
 
-    <script src="scripts/main.js"></script>
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
-</body>
-</html> 
+        <a href="login.html" class="feature-card">
+          <div class="feature-content">
+            <h3>Download your shows to watch offline</h3>
+            <p>Save your favorites easily and always have something to watch.</p>
+          </div>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/>
+            </svg>
+          </div>
+        </a>
+
+        <a href="login.html" class="feature-card">
+          <div class="feature-content">
+            <h3>Watch everywhere</h3>
+            <p>Stream unlimited movies and TV shows.</p>
+          </div>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z"/>
+            </svg>
+          </div>
+        </a>
+
+        <a href="login.html" class="feature-card">
+          <div class="feature-content">
+            <h3>Create up to 5 profiles</h3>
+            <p>Send others on adventures with their favorite characters in a space made just for them — free with your membership.</p>
+          </div>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+      <!-- Footer Section -->
+  <footer class="footer">
+      <div class="footer-content">
+          <div class="footer-top">
+              <p>Developed by David Axl Andoy, Ramon Joaquin Fuentes, Vincent Jade Datiles.</p>
+          </div>
+      </div>
+  </footer>
+
+
+      <script src="scripts/main.js"></script>
+      <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+  </body>
+  </html> 
