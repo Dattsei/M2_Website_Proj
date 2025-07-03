@@ -352,7 +352,7 @@ function goBack() {
       window.history.back();
     } else {
       // Fallback to main page if no history
-      window.location.href = 'mainpage.html';
+      window.location.href = "/mainpage";
     }
   }
 }

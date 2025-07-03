@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const backBtn = document.querySelector('.back-btn');
         backBtn.addEventListener('click', function() {
             saveFormData();
-            window.location.href = 'subscription.html';
+            window.location.href = '/subscription';
         });
     }
 
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => {
             localStorage.removeItem('paymentFormData');
-            window.location.href = 'mainpage.html';
+            window.location.href = '/mainpage';
         }, 2000);
     }
 

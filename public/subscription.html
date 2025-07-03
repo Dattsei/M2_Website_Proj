@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="/">
   <title>Choose Your Plan - Nstream</title>
   <link rel="stylesheet" href="css/subscription.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 </head>
 <body>
   <div class="subscription-container">
-    <h1>Choose the plan that’s right for you</h1>
+    <h1>Choose the plan that's right for you</h1>
     <p>Watch all you want. Cancel anytime.</p>
 
     <div class="plans">
@@ -62,7 +63,7 @@
         return;
       }
       localStorage.setItem('selectedPlan', selectedPlan);
-      window.location.href = "account.html"; // Redirect or handle signup
+      window.location.href = "/account"; // Redirect or handle signup
     }
   </script>
 </body>
