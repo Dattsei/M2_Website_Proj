@@ -1,31 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const bcrypt = require('bcryptjs');
-const connectDB = require('./dBConnection');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const bcrypt = require('bcryptjs');
+const connectDB = require('./dBConnection');
+const connectR2 = require('./r2Connection');
 
+// Initialize app
 const app = express();
 const PORT = process.env.PORT || 4800;
 
-// Define User schema
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
+// Import routes
+const uploadRoutes = require('./public/routes/uploads');
 
-// Create User model
-const User = mongoose.model('User', userSchema);
+const pagesRoutes = require('./public/routes/pages');
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// FIXED: Static file serving - serve both root directory and public folder
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(__dirname)); // This serves files from root directory
 
 // Session middleware
 app.use(session({
@@ -42,7 +40,29 @@ app.use(session({
   }
 }));
 
-// Registration endpoint
+// User model
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+const User = mongoose.model('User', userSchema);
+
+// Content model (for admin dashboard)
+const contentSchema = new mongoose.Schema({
+  title: String,
+  type: String,
+  // Add other content fields as needed
+});
+const Content = mongoose.model('Content', contentSchema);
+
+// Routes
+app.use('/api/upload', uploadRoutes);
+app.use('/', pagesRoutes);
+
+// Auth endpoints
 app.post('/api/register', async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
@@ -63,19 +83,12 @@ app.post('/api/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword
-    });
+    const newUser = await User.create({ name, email, password: hashedPassword });
 
     res.json({ 
       success: true, 
       message: 'Registration successful!',
-      user: {
-        id: newUser._id,
-        name: newUser.name
-      }
+      user: { id: newUser._id, name: newUser.name }
     });
 
   } catch (error) {
@@ -87,41 +100,20 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Find user by email
     const user = await User.findOne({ email });
-    if (!user) {
+    
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid email or password' 
       });
     }
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid email or password' 
-      });
-    }
-
-    // Login successful - create session
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email
-    };
-
-    res.json({ 
-      success: true, 
-      message: 'Login successful!',
-      user: req.session.user
-    });
+    req.session.user = { id: user._id, name: user.name, email: user.email };
+    res.json({ success: true, message: 'Login successful!', user: req.session.user });
 
   } catch (error) {
     console.error('Login error:', error);
@@ -132,66 +124,75 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Logout endpoint
 app.post('/api/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) {
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Logout failed' 
-      });
-    }
+    if (err) return res.status(500).json({ success: false, message: 'Logout failed' });
     res.clearCookie('connect.sid');
-    res.json({ 
-      success: true, 
-      message: 'Logged out successfully' 
-    });
+    res.json({ success: true, message: 'Logged out successfully' });
   });
 });
 
-// Protected route example
-app.get('/api/profile', (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Unauthorized' 
-    });
+// Admin endpoints
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    if (!req.session.user?.isAdmin) {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const [userCount, subCount, movieCount, seriesCount] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ subscription: { $ne: 'Free' } }),
+      Content.countDocuments({ type: 'Movie' }),
+      Content.countDocuments({ type: 'Series' })
+    ]);
+
+    res.json({ success: true, stats: { userCount, subCount, movieCount, seriesCount } });
+  } catch (error) {
+    console.error('Admin stats error:', error);
+    res.status(500).json({ success: false, message: 'Failed to load stats' });
   }
-  res.json({ 
-    success: true, 
-    user: req.session.user 
-  });
 });
 
-// View routes
-const servePage = (page) => (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', `${page}.html`));
+// Error handling
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ success: false, message: 'Server error' });
+});
+
+// Start server
+const startServer = async () => {
+  try {
+    console.log('Connecting to databases...');
+    await connectDB();
+    await connectR2();
+    
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('Server startup failed:', err);
+    process.exit(1);
+  }
 };
 
-app.get('/', servePage('index'));
-app.get('/admin', servePage('admin'));
-app.get('/favorites', servePage('favorites'));
-app.get('/login', servePage('login'));
-app.get('/mainpage', servePage('mainpage'));
-app.get('/register', servePage('register'));
-app.get('/account', servePage('account'));
-app.get('/manage-profiles', servePage('manage-profiles'));
-app.get('/payment-method', servePage('payment-method'));
-app.get('/profiles', servePage('profiles'));
-app.get('/search', servePage('search'));
-app.get('/subscription', servePage('subscription'));
-app.get('/watchpage', servePage('watchpage'));
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+
+
+
+// Enhanced r2Connection.js with better error handling
+const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+
+const client = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID.trim(),
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY.trim()
+  }
 });
 
-// Connect to DB and start server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}).catch(err => {
-  console.error('❌ Failed to start server:', err);
-});
+
+
+module.exports = connectR2;
+module.exports.client = client;
+startServer();
