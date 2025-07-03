@@ -29,7 +29,7 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Session middleware
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ 
@@ -174,6 +174,13 @@ app.get('/favorites', servePage('favorites'));
 app.get('/login', servePage('login'));
 app.get('/mainpage', servePage('mainpage'));
 app.get('/register', servePage('register'));
+app.get('/account', servePage('account'));
+app.get('/manage-profiles', servePage('manage-profiles'));
+app.get('/payment-method', servePage('payment-method'));
+app.get('/profiles', servePage('profiles'));
+app.get('/search', servePage('search'));
+app.get('/subscription', servePage('subscription'));
+app.get('/watchpage', servePage('watchpage'));
 
 // 404 Handler
 app.use((req, res) => {
