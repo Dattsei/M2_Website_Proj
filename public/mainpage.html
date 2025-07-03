@@ -16,7 +16,7 @@
         <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
       </div>
       <ul class="nav-links">
-        <li><a href="#home" >Home</a></li>
+        <li><a href="#home">Home</a></li>
         <li><a href="#movies">Movies</a></li>
         <li><a href="#tvshows">TV Shows</a></li>
         <li><a href="#trending">Trending</a></li>
@@ -26,10 +26,8 @@
           <i class="fas fa-heart"></i>
         </a>
         <a href="search.html" class="search-btn">
-  <i class="fas fa-search"></i>
-</a>
-
-        </button>
+          <i class="fas fa-search"></i>
+        </a>
         <div class="profile-menu">
           <button class="profile-btn" onclick="toggleProfileMenu()">
             <img src="assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
@@ -39,11 +37,15 @@
               <li onclick="location.href='manage-profiles.html'">
                 <i class="fas fa-pencil-alt"></i> Manage Profiles
               </li>
-              <li><i class="fas fa-right-left"></i> Transfer Profile</li>
+              <li onclick="openChangeProfileModal()">
+                <i class="fas fa-right-left"></i> Transfer Profile
+              </li>
               <li onclick="location.href='account.html'">
                 <i class="fas fa-user-cog"></i> Account
               </li>
-              <li><i class="fas fa-question-circle"></i> Help Center</li>
+              <li onclick="openHelpCenter()">
+                <i class="fas fa-question-circle"></i> Help Center
+              </li>
               <hr />
               <li><i class="fas fa-sign-out-alt"></i> Sign out of Nstream</li>
             </ul>
@@ -119,15 +121,74 @@
   </main>
 
   <!-- Movie Detail Modal -->
-  <div id="movieDetailModal" class="modal">
+  <div id="contentModal" class="modal" alt="Centered Image">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeMovieDetail()">&times;</button>
-      <h2 id="modalMovieTitle"></h2>
-      <p><strong>Genre:</strong> <span id="modalMovieGenre"></span></p>
-      <p><strong>Rating:</strong> <span id="modalMovieRating"></span></p>
-      <p style="margin-top:1rem;">Enjoy streaming this movie on NStream!</p>
+      <div class="modal-header">
+        <div class="video-placeholder">
+          <i class="fas fa-play-circle"></i>
+        </div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-type" id="modalType"></div>
+        <div class="modal-description" id="modalDescription"></div>
+        <div class="modal-info-section">
+          <div class="info-column">
+            <div class="info-row">
+              <span class="info-label">Genre/s:</span>
+              <span class="info-value" id="modalGenre"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Studio:</span>
+              <span class="info-value" id="modalStudio"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Release Date:</span>
+              <span class="info-value" id="modalReleaseDate"></span>
+            </div>
+            <div class="info-row" id="modalStatusRow" style="display: none;">
+              <span class="info-label">Status:</span>
+              <span class="info-value" id="modalStatus"></span>
+            </div>
+          </div>
+          <div class="info-column">
+            <div class="info-row">
+              <span class="info-label">Views:</span>
+              <span class="info-value" id="modalViews"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Popularity:</span>
+              <span class="info-value" id="modalPopularity"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rating:</span>
+              <span class="info-value" id="modalRating"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Parental Guidance:</span>
+              <span class="info-value" id="modalParentalGuidance"></span>
+            </div>
+          </div>
+        </div>
+        <div class="user-actions">
+          <button class="action-btn watch-now-btn" id="watchNowBtn" onclick="watchNow()">
+            <i class="fas fa-play"></i>
+            <span>Watch Now</span>
+          </button>
+          <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+            <i class="fas fa-heart"></i>
+            <span id="likeText">Like</span>
+          </button>
+        </div>
+        <div class="episodes-section" id="episodesSection" style="display: none;">
+          <h3 class="episodes-title">Episodes</h3>
+          <div id="episodesList"></div>
+        </div>
+      </div>
     </div>
   </div>
+  
 
   <!-- Change Profile Modal -->
   <div id="changeProfileModal" class="modal" style="display: none;">
@@ -141,7 +202,7 @@
   <!-- Help Center Modal -->
   <div id="helpCenterModal" class="modal" style="display: none;">
     <div class="modal-content help-content">
-      <button class="modal-close" onclick="closeHelpCenter()">&times;</button>
+      <button class="modal-close" onclick="closeHelpCenter()">×</button>
       <h2>Help Center</h2>
       <div class="faq-list">
         <div class="faq-item">
@@ -165,5 +226,4 @@
   </div>
 
   <script src="scripts/mainpage.js"></script>
-</body>
 </html>
