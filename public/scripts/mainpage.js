@@ -12,7 +12,8 @@ const contentData = [
     popularity: 98,
     views: 2500000,
     viewsFormatted: "2.5M",
-    description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice."
+    description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+    poster: "assets/images/dark-knight.jpg"
   },
   {
     id: 2,
@@ -29,6 +30,7 @@ const contentData = [
     views: 5200000,
     viewsFormatted: "5.2M",
     description: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future.",
+    poster: "assets/images/breaking-bad.jpg",
     episodes: [
       {
         id: 1,
@@ -71,7 +73,8 @@ const contentData = [
     popularity: 94,
     views: 3100000,
     viewsFormatted: "3.1M",
-    description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O."
+    description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+    poster: "assets/images/inception.jpg"
   },
   {
     id: 4,
@@ -88,6 +91,7 @@ const contentData = [
     views: 4800000,
     viewsFormatted: "4.8M",
     description: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.",
+    poster: "assets/images/stranger-things.jpg",
     episodes: [
       {
         id: 1,
@@ -117,7 +121,8 @@ const contentData = [
     popularity: 93,
     views: 2800000,
     viewsFormatted: "2.8M",
-    description: "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption."
+    description: "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
+    poster: "assets/images/pulp-fiction.jpg"
   },
   {
     id: 6,
@@ -134,6 +139,7 @@ const contentData = [
     views: 6200000,
     viewsFormatted: "6.2M",
     description: "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium.",
+    poster: "assets/images/the-office.jpg",
     episodes: [
       {
         id: 1,
@@ -160,6 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderContent('moviesGrid', 'movie');
   renderContent('trendingGrid', 'all', 'popularity');
   renderContent('tvshowsGrid', 'series');
+  renderFavorites();
 
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
@@ -179,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function renderContent(gridId, type, sortBy = 'none') {
   const grid = document.getElementById(gridId);
+  if (!grid) return;
+
   grid.innerHTML = '';
 
   let data = filteredData.filter(item => type === 'all' || item.type === type);
@@ -201,14 +210,16 @@ function renderContent(gridId, type, sortBy = 'none') {
 }
 
 function createContentCard(item) {
-  const card = document.createElement('div');
-  card.className = 'movie-card';
-  card.dataset.itemId = item.id; // Add data attribute for reference
-  card.addEventListener('click', () => openModal(item)); // Use addEventListener for better event handling
-  const displayType = item.type === 'series' ? 'SERIES' : item.type.toUpperCase();
+  const card = document.createElement("div");
+  card.className = "movie-card";
+  card.dataset.itemId = item.id;
+  card.addEventListener("click", () => openModal(item));
+
+  const displayType = item.type === "series" ? "SERIES" : item.type.toUpperCase();
+
   card.innerHTML = `
     <div class="movie-poster">
-      <i class="fas fa-${item.type === 'movie' ? 'film' : 'tv'}"></i>
+      <img src="${item.poster || 'assets/images/default-poster.png'}" alt="${item.title} Poster" onerror="this.src='assets/images/default-poster.png'" />
     </div>
     <div class="movie-info">
       <h3 class="movie-title">${item.title}</h3>
@@ -223,7 +234,32 @@ function createContentCard(item) {
       </div>
     </div>
   `;
+
   return card;
+}
+
+function renderFavorites() {
+  const profile = getCurrentProfile();
+  const grid = document.getElementById("favoritesGrid");
+  if (!grid) return;
+
+  if (!profile) {
+    grid.innerHTML = "<p style='text-align: center;'>Please select a profile to view favorites.</p>";
+    return;
+  }
+
+  const favorites = getFavorites();
+  grid.innerHTML = "";
+
+  if (!favorites.length) {
+    grid.innerHTML = "<p style='text-align: center;'>No favorites added yet.</p>";
+    return;
+  }
+
+  favorites.forEach(item => {
+    const card = createContentCard(item);
+    grid.appendChild(card);
+  });
 }
 
 function toggleSearch() {
@@ -267,8 +303,11 @@ function openModal(item) {
   const modalDescription = document.getElementById('modalDescription');
   const episodesSection = document.getElementById('episodesSection');
   const episodesList = document.getElementById('episodesList');
+  const likeBtn = document.getElementById('likeBtn');
+  const likeText = document.getElementById('likeText');
   const typeDisplay = item.type === 'series' ? 'SERIES' : item.type.toUpperCase();
 
+  // Set modal content
   modalTitle.textContent = item.title;
   modalType.textContent = typeDisplay;
   modalDescription.textContent = item.description;
@@ -280,6 +319,14 @@ function openModal(item) {
   document.getElementById('modalRating').textContent = `${item.rating}/10`;
   document.getElementById('modalParentalGuidance').textContent = item.parentalGuidance;
 
+  // Update modal header with poster
+  const modalHeader = document.querySelector('.modal-header');
+  modalHeader.innerHTML = `
+    <img src="${item.poster || 'assets/images/default-poster.png'}" alt="${item.title} Poster" class="modal-poster" onerror="this.src='assets/images/default-poster.png'" />
+    <button class="modal-close" onclick="closeModal()">×</button>
+  `;
+
+  // Handle series status
   const statusRow = document.getElementById('modalStatusRow');
   if (item.type === 'series' && item.status) {
     statusRow.style.display = 'flex';
@@ -288,6 +335,7 @@ function openModal(item) {
     statusRow.style.display = 'none';
   }
 
+  // Handle episodes for series
   if (item.type === 'series' && item.episodes) {
     episodesSection.style.display = 'block';
     episodesList.innerHTML = item.episodes.map(episode => `
@@ -318,8 +366,92 @@ function openModal(item) {
     episodesSection.style.display = 'none';
   }
 
-  resetUserActions();
-  modal.style.display = 'block'; // Ensure modal is shown
+  // Check if item is in favorites and set button state
+  const favorites = getFavorites();
+  const isFavorited = favorites.some(fav => fav.id === item.id);
+  if (isFavorited) {
+    likeBtn.classList.add('active');
+    likeText.textContent = 'Liked';
+  } else {
+    likeBtn.classList.remove('active');
+    likeText.textContent = 'Like';
+  }
+
+  modal.style.display = 'block';
+}
+
+function getCurrentProfile() {
+  return JSON.parse(localStorage.getItem("currentProfile"));
+}
+
+function getFavorites() {
+  const profile = getCurrentProfile();
+  if (!profile) return [];
+  return JSON.parse(localStorage.getItem(`favorites_${profile.name}`)) || [];
+}
+
+function saveFavorites(favorites) {
+  const profile = getCurrentProfile();
+  if (!profile) return;
+  localStorage.setItem(`favorites_${profile.name}`, JSON.stringify(favorites));
+}
+
+function toggleLike() {
+  const btn = document.getElementById('likeBtn');
+  const text = document.getElementById('likeText');
+  const modalTitle = document.getElementById('modalTitle').textContent;
+  const content = contentData.find(item => item.title === modalTitle);
+  
+  if (!content) return;
+
+  const profile = getCurrentProfile();
+  if (!profile) {
+    alert('Please select a profile to like content.');
+    return;
+  }
+
+  let favorites = getFavorites();
+  
+  if (btn.classList.contains('active')) {
+    // Remove from favorites
+    favorites = favorites.filter(fav => fav.id !== content.id);
+    btn.classList.remove('active');
+    text.textContent = 'Like';
+  } else {
+    // Add to favorites
+    favorites.push(content);
+    btn.classList.add('active');
+    text.textContent = 'Liked';
+  }
+
+  saveFavorites(favorites);
+  renderFavorites();
+}
+
+function toggleFavorite(movie) {
+  const favorites = getFavorites();
+  const index = favorites.findIndex(fav => fav.id === movie.id);
+
+  if (index !== -1) {
+    // Already in favorites – remove
+    favorites.splice(index, 1);
+  } else {
+    // Add to favorites
+    favorites.push(movie);
+  }
+
+  saveFavorites(favorites);
+  renderFavorites();
+  updateLikeButton(movie.id);
+}
+
+function updateLikeButton(movieId) {
+  const button = document.querySelector(`.like-btn[data-id="${movieId}"]`);
+  if (!button) return;
+
+  const favorites = getFavorites();
+  const isFavorite = favorites.some(m => m.id === movieId);
+  button.classList.toggle("liked", isFavorite);
 }
 
 function resetUserActions() {
@@ -331,18 +463,6 @@ function resetUserActions() {
 
 function watchNow() {
   alert('No Player Yet');
-}
-
-function toggleLike() {
-  const btn = document.getElementById('likeBtn');
-  const text = document.getElementById('likeText');
-  if (btn.classList.contains('active')) {
-    btn.classList.remove('active');
-    text.textContent = 'Like';
-  } else {
-    btn.classList.add('active');
-    text.textContent = 'Liked';
-  }
 }
 
 function closeModal() {
@@ -374,10 +494,6 @@ function closeLearnMore() {
 
 function getProfiles() {
   return JSON.parse(localStorage.getItem("profiles")) || [];
-}
-
-function getCurrentProfile() {
-  return JSON.parse(localStorage.getItem("currentProfile"));
 }
 
 function setCurrentProfile(profile) {
@@ -455,234 +571,11 @@ document.addEventListener('keydown', function(event) {
     closeModal();
   }
 });
-// Add this function to get favorites for the current profile
-function getFavorites() {
-  const profile = getCurrentProfile();
-  if (!profile) return [];
-  const favorites = JSON.parse(localStorage.getItem(`favorites_${profile.name}`)) || [];
-  return favorites;
-}
-
-// Add this function to save favorites for the current profile
-function saveFavorites(favorites) {
-  const profile = getCurrentProfile();
-  if (!profile) return;
-  localStorage.setItem(`favorites_${profile.name}`, JSON.stringify(favorites));
-}
-
-// Modify toggleLike to handle adding/removing from favorites
-function toggleLike() {
-  const btn = document.getElementById('likeBtn');
-  const text = document.getElementById('likeText');
-  const modalTitle = document.getElementById('modalTitle').textContent;
-  const content = contentData.find(item => item.title === modalTitle);
-  
-  if (!content) return;
-
-  const profile = getCurrentProfile();
-  if (!profile) {
-    alert('Please select a profile to like content.');
-    return;
-  }
-
-  let favorites = getFavorites();
-  
-  if (btn.classList.contains('active')) {
-    // Remove from favorites
-    favorites = favorites.filter(fav => fav.id !== content.id);
-    btn.classList.remove('active');
-    text.textContent = 'Like';
-  } else {
-    // Add to favorites
-    favorites.push(content);
-    btn.classList.add('active');
-    text.textContent = 'Liked';
-  }
-
-  saveFavorites(favorites);
-}
-
-// Update openModal to set like button state based on favorites
-function openModal(item) {
-  const modal = document.getElementById('contentModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalType = document.getElementById('modalType');
-  const modalDescription = document.getElementById('modalDescription');
-  const episodesSection = document.getElementById('episodesSection');
-  const episodesList = document.getElementById('episodesList');
-  const likeBtn = document.getElementById('likeBtn');
-  const likeText = document.getElementById('likeText');
-  const typeDisplay = item.type === 'series' ? 'SERIES' : item.type.toUpperCase();
-
-  modalTitle.textContent = item.title;
-  modalType.textContent = typeDisplay;
-  modalDescription.textContent = item.description;
-  document.getElementById('modalGenre').textContent = item.genre.charAt(0).toUpperCase() + item.genre.slice(1);
-  document.getElementById('modalStudio').textContent = item.studio;
-  document.getElementById('modalReleaseDate').textContent = item.releaseDate;
-  document.getElementById('modalViews').textContent = item.viewsFormatted;
-  document.getElementById('modalPopularity').textContent = `${item.popularity}%`;
-  document.getElementById('modalRating').textContent = `${item.rating}/10`;
-  document.getElementById('modalParentalGuidance').textContent = item.parentalGuidance;
-
-  const statusRow = document.getElementById('modalStatusRow');
-  if (item.type === 'series' && item.status) {
-    statusRow.style.display = 'flex';
-    document.getElementById('modalStatus').textContent = item.status.charAt(0).toUpperCase() + item.status.slice(1);
-  } else {
-    statusRow.style.display = 'none';
-  }
-
-  if (item.type === 'series' && item.episodes) {
-    episodesSection.style.display = 'block';
-    episodesList.innerHTML = item.episodes.map(episode => `
-      <div class="episode-card">
-        <div class="episode-content">
-          <div class="episode-video">
-            <div class="episode-thumbnail">
-              <i class="fas fa-play-circle"></i>
-              <div class="episode-duration">${episode.duration}</div>
-            </div>
-          </div>
-          <div class="episode-details">
-            <div class="episode-title">S${episode.season}E${episode.episode}: ${episode.title}</div>
-            <div class="episode-info">
-              <span>Released: ${episode.releaseDate}</span>
-              <div class="episode-stats">
-                <span><i class="fas fa-star star"></i> ${episode.rating}</span>
-                <span><i class="fas fa-eye"></i> ${episode.viewsFormatted}</span>
-                <span><i class="fas fa-fire"></i> ${episode.popularity}%</span>
-              </div>
-            </div>
-            <div class="episode-description">${episode.description}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  } else {
-    episodesSection.style.display = 'none';
-  }
-
-  // Check if item is in favorites and set button state
-  const favorites = getFavorites();
-  const isFavorited = favorites.some(fav => fav.id === item.id);
-  if (isFavorited) {
-    likeBtn.classList.add('active');
-    likeText.textContent = 'Liked';
-  } else {
-    likeBtn.classList.remove('active');
-    likeText.textContent = 'Like';
-  }
-
-  modal.style.display = 'block';
-}
-
-function getCurrentProfile() {
-  return JSON.parse(localStorage.getItem("currentProfile"));
-}
-
-function getFavorites() {
-  const profile = getCurrentProfile();
-  if (!profile) return [];
-  return JSON.parse(localStorage.getItem(`favorites_${profile.name}`)) || [];
-}
-
-function saveFavorites(favorites) {
-  const profile = getCurrentProfile();
-  if (!profile) return;
-  localStorage.setItem(`favorites_${profile.name}`, JSON.stringify(favorites));
-}
-
-function toggleFavorite(movie) {
-  const favorites = getFavorites();
-  const index = favorites.findIndex(fav => fav.id === movie.id);
-
-  if (index !== -1) {
-    // Already in favorites – remove
-    favorites.splice(index, 1);
-  } else {
-    // Add to favorites
-    favorites.push(movie);
-  }
-
-  saveFavorites(favorites);
-  updateLikeButton(movie.id); // Optional: visual feedback
-}
-
-function updateLikeButton(movieId) {
-  const button = document.querySelector(`.like-btn[data-id="${movieId}"]`);
-  if (!button) return;
-
-  const favorites = getFavorites();
-  const isFavorite = favorites.some(m => m.id === movieId);
-  button.classList.toggle("liked", isFavorite);
-}
-document.addEventListener("DOMContentLoaded", () => {
-  const profile = getCurrentProfile();
-  if (!profile) {
-    alert("Please select a profile to view favorites.");
-    return;
-  }
-
-  const favorites = getFavorites();
-  const grid = document.getElementById("favoritesGrid");
-
-  if (!favorites.length) {
-    grid.innerHTML = "<p style='text-align: center;'>No favorites added yet.</p>";
-    return;
-  }
-
-  favorites.forEach(item => {
-    const card = createContentCard(item);
-    grid.appendChild(card);
-  });
-});
-
-function getCurrentProfile() {
-  return JSON.parse(localStorage.getItem("currentProfile"));
-}
-
-function getFavorites() {
-  const profile = getCurrentProfile();
-  if (!profile) return [];
-  return JSON.parse(localStorage.getItem(`favorites_${profile.name}`)) || [];
-}
-
-function createContentCard(item) {
-  const card = document.createElement("div");
-  card.className = "movie-card";
-  card.dataset.itemId = item.id;
-  card.addEventListener("click", () => openModal(item));
-
-  const displayType = item.type === "series" ? "SERIES" : item.type.toUpperCase();
-
-  card.innerHTML = `
-    <div class="movie-poster">
-      <i class="fas fa-${item.type === "movie" ? "film" : "tv"}"></i>
-    </div>
-    <div class="movie-info">
-      <h3 class="movie-title">${item.title}</h3>
-      <div class="movie-type">${displayType}</div>
-      <div class="movie-info-content">
-        <span class="movie-genre">${item.genre.toUpperCase()}</span>
-        <span>${item.year}</span>
-      </div>
-      <div class="movie-rating">
-        <span class="rating-stars"><i class="fas fa-star star"></i></span>
-        <span>${item.rating}/10</span>
-      </div>
-    </div>
-  `;
-
-  return card;
-}
-
-// ... (your existing JavaScript code) ...
 
 function openInfoModal() {
   const infoModal = document.getElementById('infoModal');
   if (infoModal) {
-    infoModal.style.display = 'flex'; // Use 'flex' to activate the centering from .modal
+    infoModal.style.display = 'flex';
   }
 }
 
@@ -692,5 +585,3 @@ function closeInfoModal() {
     infoModal.style.display = 'none';
   }
 }
-
-// ... (rest of your existing JavaScript code) ...
