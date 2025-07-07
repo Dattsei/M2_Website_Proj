@@ -13,7 +13,8 @@ const contentData = [
         views: 2500000,
         viewsFormatted: "2.5M",
         description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-        poster: "assets/images/dark-knight.jpg"
+        poster: "assets/images/dark-knight.jpg",
+        videoFile: "assets/videos/darkknight.mp4", // Ensure this path is correct
     },
     {
         id: 2,
@@ -31,6 +32,8 @@ const contentData = [
         viewsFormatted: "5.2M",
         description: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future.",
         poster: "assets/images/breaking-bad.jpg",
+        videoFile: "assets/videos/breaking-bad.mp4", // Ensure this path is correct
+
         episodes: [
             {
                 id: 1,
@@ -43,7 +46,8 @@ const contentData = [
                 viewsFormatted: "1.4M",
                 duration: "58 min",
                 season: 1,
-                episode: 1
+                episode: 1,
+                videoFile: "assets/videos/breaking-bad-s1e1.mp4" // Add video file for episodes too
             },
             {
                 id: 2,
@@ -56,7 +60,8 @@ const contentData = [
                 viewsFormatted: "1.2M",
                 duration: "48 min",
                 season: 1,
-                episode: 2
+                episode: 2,
+                videoFile: "assets/videos/breaking-bad-s1e2.mp4" // Add video file for episodes
             }
         ]
     },
@@ -74,7 +79,8 @@ const contentData = [
         views: 3100000,
         viewsFormatted: "3.1M",
         description: "A thief who steals corporate secrets through the use of dream-sharing technology is given Romanshe inverse task of planting an idea into the mind of a C.E.O.",
-        poster: "assets/images/inception.jpg"
+        poster: "assets/images/inception.jpg",
+        videoFile: "assets/videos/inception.mp4" // Ensure this path is correct
     },
     {
         id: 4,
@@ -92,6 +98,7 @@ const contentData = [
         viewsFormatted: "4.8M",
         description: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.",
         poster: "assets/images/stranger-things.jpg",
+        videoFile: "assets/videos/stranger-things.mp4", // Add a main video file for the series if applicable
         episodes: [
             {
                 id: 1,
@@ -104,7 +111,8 @@ const contentData = [
                 viewsFormatted: "2.1M",
                 duration: "47 min",
                 season: 1,
-                episode: 1
+                episode: 1,
+                videoFile: "assets/videos/stranger-things-s1e1.mp4" // Add video file for episodes
             }
         ]
     },
@@ -122,7 +130,8 @@ const contentData = [
         views: 2800000,
         viewsFormatted: "2.8M",
         description: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
-        poster: "assets/images/pulp-fiction.jpg"
+        poster: "assets/images/pulp-fiction.jpg",
+        videoFile: "assets/videos/pulp-fiction.mp4" // Ensure this path is correct
     },
     {
         id: 6,
@@ -140,6 +149,7 @@ const contentData = [
         viewsFormatted: "6.0M",
         description: "A mockumentary on the everyday lives of a group of office employees in the Scranton, Pennsylvania, branch of the fictional Dunder Mifflin Paper Company.",
         poster: "assets/images/the-office.jpg",
+        videoFile: "assets/videos/the-office.mp4", // Add a main video file for the series if applicable
         episodes: [
             {
                 id: 1,
@@ -152,7 +162,8 @@ const contentData = [
                 viewsFormatted: "1.8M",
                 duration: "23 min",
                 season: 1,
-                episode: 1
+                episode: 1,
+                videoFile: "assets/videos/the-office-s1e1.mp4" // Add video file for episodes
             }
         ]
     },
@@ -224,7 +235,7 @@ function filterAndSortContent(data) {
         const matchesType = currentFilterType === 'all' || item.type === currentFilterType;
         const matchesGenre = currentFilterGenre === 'all' || item.genre === currentFilterGenre;
         const matchesSearch = item.title.toLowerCase().includes(currentSearchQuery) ||
-                              item.description.toLowerCase().includes(currentSearchQuery);
+                                item.description.toLowerCase().includes(currentSearchQuery);
         return matchesType && matchesGenre && matchesSearch;
     });
 
@@ -252,7 +263,6 @@ function displayContent(contentToDisplay) {
     const resultsInfo = document.getElementById('resultsInfo');
     contentGrid.innerHTML = '';
 
-    // If no filter is active, use all content
     const itemsToDisplay = contentToDisplay.length > 0 ? contentToDisplay : contentData;
     
     resultsInfo.textContent = `Showing ${itemsToDisplay.length} results`;
@@ -300,6 +310,12 @@ const episodesList = document.getElementById('episodesList');
 const likeBtn = document.getElementById('likeBtn');
 const likeText = document.getElementById('likeText');
 
+// New video elements
+const videoPlayerContainer = document.querySelector('.video-player-container');
+const modalVideoPlayer = document.getElementById('modalVideoPlayer');
+const watchNowBtn = document.querySelector('.watch-now-btn'); // Get the button reference
+const watchNowText = document.getElementById('watchNowText'); // Get the text span reference
+
 let currentModalContentId = null;
 
 function openModal(id) {
@@ -336,6 +352,14 @@ function openModal(id) {
         <button class="modal-close" onclick="closeModal()">×</button>
     `;
 
+    // Hide video player and reset button text when opening a new modal
+    videoPlayerContainer.style.display = 'none';
+    modalVideoPlayer.pause();
+    modalVideoPlayer.removeAttribute('src'); // Clear video source
+    watchNowText.textContent = 'Watch Now';
+    watchNowBtn.innerHTML = '<i class="fas fa-play"></i> <span id="watchNowText">Watch Now</span>';
+
+
     if (content.type === 'series' && content.episodes && content.episodes.length > 0) {
         episodesSection.style.display = 'block';
         episodesList.innerHTML = '';
@@ -362,6 +386,8 @@ function openModal(id) {
                     </div>
                 </div>
             `;
+            // Add click listener for episode video
+            episodeCard.querySelector('.episode-video').addEventListener('click', () => playEpisode(episode.id, content.id));
             episodesList.appendChild(episodeCard);
         });
     } else {
@@ -378,6 +404,14 @@ function closeModal() {
     contentModal.style.display = 'none';
     document.body.style.overflow = '';
     currentModalContentId = null;
+
+    // Stop and clear video when closing modal
+    modalVideoPlayer.pause();
+    modalVideoPlayer.removeAttribute('src');
+    modalVideoPlayer.load(); // Explicitly load to reset state in some browsers
+    videoPlayerContainer.style.display = 'none'; // Hide the video player
+    watchNowText.textContent = 'Watch Now'; // Reset watch button text
+    watchNowBtn.innerHTML = '<i class="fas fa-play"></i> <span id="watchNowText">Watch Now</span>'; // Reset watch button icon
 }
 
 window.addEventListener('click', (event) => {
@@ -419,10 +453,66 @@ function updateLikeButtonState(contentId) {
 }
 
 function watchNow() {
-    if (currentModalContentId) {
-        alert(`Watching content ID: ${currentModalContentId}`);
+    if (currentModalContentId === null) return;
+
+    const content = contentData.find(item => item.id === currentModalContentId);
+
+    if (videoPlayerContainer.style.display === 'block') {
+        // If video is currently showing, hide it
+        videoPlayerContainer.style.display = 'none';
+        modalVideoPlayer.pause();
+        modalVideoPlayer.removeAttribute('src'); // Clear video source
+        watchNowText.textContent = 'Watch Now';
+        watchNowBtn.innerHTML = '<i class="fas fa-play"></i> <span id="watchNowText">Watch Now</span>'; // Restore play icon
+    } else {
+        // If video is hidden, show it and play
+        if (content && content.videoFile) {
+            modalVideoPlayer.src = content.videoFile;
+            videoPlayerContainer.style.display = 'block';
+            modalVideoPlayer.load(); // Ensure the video source is loaded
+            modalVideoPlayer.play().catch(error => {
+                console.error("Autoplay failed:", error);
+                // Handle autoplay restrictions (e.g., show a play button overlay)
+                alert("Autoplay prevented. Please click play on the video player.");
+            });
+            watchNowText.textContent = 'Hide Video';
+            watchNowBtn.innerHTML = '<i class="fas fa-stop"></i> <span id="watchNowText">Hide Video</span>'; // Change icon to stop
+        } else {
+            alert('Video not available for this content.');
+            videoPlayerContainer.style.display = 'none';
+        }
     }
 }
+
+// Function to play a specific episode
+function playEpisode(episodeId, seriesId) {
+    const series = contentData.find(item => item.id === seriesId && item.type === 'series');
+    if (!series || !series.episodes) {
+        console.error('Series or episodes not found.');
+        return;
+    }
+
+    const episode = series.episodes.find(ep => ep.id === episodeId);
+    if (episode && episode.videoFile) {
+        // Hide modal header (poster) and show video player
+        document.querySelector('.modal-header').style.display = 'none';
+        videoPlayerContainer.style.display = 'block';
+        modalVideoPlayer.src = episode.videoFile;
+        modalVideoPlayer.load();
+        modalVideoPlayer.play().catch(error => {
+            console.error("Autoplay failed for episode:", error);
+            alert("Autoplay prevented for episode. Please click play on the video player.");
+        });
+
+        // Update the "Watch Now" button to "Hide Video" and current content to this episode's series
+        currentModalContentId = seriesId; // Keep the modal context to the series
+        watchNowText.textContent = 'Hide Video';
+        watchNowBtn.innerHTML = '<i class="fas fa-stop"></i> <span id="watchNowText">Hide Video</span>';
+    } else {
+        alert('Episode video not available.');
+    }
+}
+
 
 // --- Initial Load ---
 

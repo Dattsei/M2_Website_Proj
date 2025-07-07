@@ -1,300 +1,542 @@
 /* Content Grid Styles */
+body {
+    margin: 0;
+    background: #121212;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
 .content-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
 }
 
 .content-card {
-  background: #1a1a1a;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  cursor: pointer;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
 .content-card:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 .card-image {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 150%;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 150%;
+    overflow: hidden;
 }
 
 .card-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .play-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 3rem;
-  color: rgba(255, 255, 255, 0.7);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .content-card:hover .play-icon {
-  opacity: 1;
+    opacity: 1;
 }
 
 .card-content {
-  padding: 10px;
+    padding: 10px;
 }
 
 .card-title {
-  font-size: 1rem;
-  margin: 0 0 5px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size: 1rem;
+    margin: 0 0 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .card-type {
-  display: inline-block;
-  font-size: 0.7rem;
-  background: #333;
-  padding: 2px 5px;
-  border-radius: 3px;
-  margin-bottom: 8px;
+    display: inline-block;
+    font-size: 0.7rem;
+    background: #333;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-bottom: 8px;
 }
 
 .card-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: #aaa;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #aaa;
 }
 
 /* Modal Styles */
 .modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-  background: #1a1a1a;
-  width: 80%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 8px;
-  position: relative;
+    background: #1a1a1a;
+    width: 80%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    position: relative;
 }
 
 .modal-header {
-  position: relative;
-  height: 300px;
-  overflow: hidden;
+    position: relative;
+    height: 300px;
+    overflow: hidden;
 }
 
 .modal-poster {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
-  color: white;
-  font-size: 2rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-body {
-  padding: 20px;
+    padding: 20px;
 }
 
 .modal-title {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .modal-type {
-  display: inline-block;
-  background: #333;
-  padding: 3px 8px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+    display: inline-block;
+    background: #333;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 15px;
 }
 
 .modal-description {
-  margin-bottom: 20px;
-  line-height: 1.5;
+    margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 .modal-info-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .info-column {
-  flex: 1;
-  min-width: 250px;
+    flex: 1;
+    min-width: 250px;
 }
 
 .info-row {
-  display: flex;
-  margin-bottom: 10px;
+    display: flex;
+    margin-bottom: 10px;
 }
 
 .info-label {
-  font-weight: bold;
-  margin-right: 10px;
-  min-width: 120px;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 120px;
 }
 
 .user-actions {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .action-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
 }
 
 .watch-now-btn {
-  background: #e50914;
-  color: white;
+    background: #e50914;
+    color: white;
 }
 
 .action-btn i {
-  font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 
 /* Episode Styles */
 .episodes-title {
-  border-bottom: 1px solid #333;
-  padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
 }
 
 .episode-card {
-  margin-bottom: 15px;
-  background: #222;
-  border-radius: 5px;
-  overflow: hidden;
+    margin-bottom: 15px;
+    background: #222;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .episode-content {
-  display: flex;
+    display: flex;
 }
 
 .episode-video {
-  position: relative;
-  width: 200px;
-  height: 120px;
-  background: #000;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: relative;
+    width: 200px;
+    height: 120px;
+    background: #000;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .episode-video i {
-  font-size: 2rem;
-  color: rgba(255, 255, 255, 0.7);
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .episode-duration {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 0.8rem;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
 }
 
 .episode-details {
-  padding: 10px;
-  flex-grow: 1;
+    padding: 10px;
+    flex-grow: 1;
 }
 
 .episode-title {
-  margin-top: 0;
-  margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 5px;
 }
 
 .episode-description {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  color: #ccc;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #ccc;
 }
 
 .episode-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: #aaa;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #aaa;
 }
 
 .episode-stats {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .episode-stats span {
-  display: flex;
-  align-items: center;
-  gap: 3px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
+
+/* Header styles */
+.header {
+    background-color: #1a1a1a; /* Dark background for the header */
+    padding: 15px 40px; /* Padding on top/bottom and sides */
+    border-bottom: 1px solid #333; /* Subtle border at the bottom */
+}
+
+.nav-container {
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Vertically align items in the center */
+    justify-content: space-between; /* Distribute items with space between them */
+    gap: 20px; /* Added gap to prevent overlap and provide spacing */
+    max-width: 1200px; /* Max width for content */
+    margin: 0 auto; /* Center the container */
+}
+
+.logo {
+    margin-right: 0; /* Removed margin-right as gap handles spacing */
+    flex-shrink: 0; /* Prevent logo from shrinking */
+}
+
+.logo-img {
+    height: 40px; /* Adjust logo size */
+    width: auto;
+}
+
+.search-section {
+    flex-grow: 1; /* Allow search input to take available space */
+    margin-right: 0; /* Removed margin-right as gap handles spacing */
+    max-width: 400px; /* Give search bar a reasonable max-width */
+}
+
+.search-input {
+    width: 100%; /* Full width within its container */
+    padding: 10px 15px; /* Padding inside the search input */
+    border: 1px solid #333; /* Border for the input */
+    border-radius: 5px; /* Slightly rounded corners */
+    background-color: #222; /* Darker background for input */
+    color: white; /* Text color */
+    font-size: 1rem; /* Font size */
+}
+
+.search-input::placeholder {
+    color: #bbb; /* Placeholder text color */
+}
+
+.mobile-menu-btn {
+    display: none; /* Hide by default for desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    margin-left: 15px;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.mobile-menu-btn span {
+    background: #fff;
+    height: 2px;
+    width: 25px;
+    display: block;
+    margin: 5px auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-content {
+    display: block; /* Show by default for desktop */
+    flex-shrink: 0; /* Prevent nav content from shrinking */
+}
+
+.nav-links {
+    list-style: none; /* Remove bullet points */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Arrange links in a row */
+    gap: 25px; /* Space between links */
+}
+
+.nav-links li a {
+    color: white; /* Link color */
+    text-decoration: none; /* Remove underline */
+    font-size: 1rem;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+    color: #e50914; /* Highlight color for active/hover */
+}
+
+/* Main content and filter/results info styles */
+.main-content {
+    padding: 20px 40px; /* Padding for the main content area */
+    max-width: 1200px; /* Max width for content */
+    margin: 0 auto; /* Center the main content */
+}
+
+.filters-section {
+    display: flex; /* Use flexbox for filter groups */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px; /* Space between filter groups */
+    margin-bottom: 20px; /* Space below filters */
+    align-items: center; /* Align items vertically */
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between label and buttons/select */
+}
+
+.filter-label {
+    font-weight: bold;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.filter-btn {
+    background-color: #333; /* Darker background for buttons */
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #e50914; /* Netflix red on hover */
+}
+
+.filter-btn.active {
+    background-color: #e50914; /* Active button color */
+    color: white;
+}
+
+.filter-select {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    appearance: none; /* Remove default select arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20512%22%3E%3Cpath%20fill%3D%22white%22%20d%3D%22M192%20256L64%20128v256l128-128z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    padding-right: 30px; /* Make space for the custom arrow */
+}
+
+.filter-select option {
+    background-color: #333;
+    color: #fff;
+}
+
+
+.results-info {
+    color: #aaa; /* Lighter color for results info */
+    font-size: 1rem;
+    margin-bottom: 20px; /* Space below results info */
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-  }
-  
-  .modal-header {
-    height: 200px;
-  }
-  
-  .episode-content {
-    flex-direction: column;
-  }
-  
-  .episode-video {
-    width: 100%;
-    height: 150px;
-  }
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header {
+        height: 200px;
+    }
+
+    .episode-content {
+        flex-direction: column;
+    }
+
+    .episode-video {
+        width: 100%;
+        height: 150px;
+    }
+
+    /* NEW MOBILE RESPONSIVE CSS */
+    .header {
+        padding: 10px 20px;
+    }
+
+    .nav-container {
+        flex-wrap: wrap; /* Allow items to wrap */
+        justify-content: space-between; /* Adjusted to keep logo and menu btn on edges */
+        gap: 10px; /* Smaller gap on mobile */
+    }
+
+    .logo {
+        flex-basis: auto; /* Allow logo to take natural width */
+        margin-bottom: 0; /* Reset margin */
+    }
+
+    .search-section {
+        order: 3; /* Move search below logo and nav links */
+        flex-basis: 100%; /* Search takes full width */
+        margin-bottom: 0; /* Reset margin */
+    }
+
+    .mobile-menu-btn {
+        display: block; /* Show mobile menu button */
+        margin-left: 0; /* Reset margin */
+    }
+
+    .nav-content {
+        display: none; /* Hide nav links by default on mobile */
+        flex-basis: 100%; /* Take full width when active */
+        text-align: center;
+        order: 2; /* Position nav links after logo and menu button */
+    }
+
+    .nav-content.active {
+        display: block;
+    }
+
+    .nav-links {
+        flex-direction: column; /* Stack links vertically */
+        gap: 10px; /* Reduce gap */
+        margin-top: 10px; /* Space between search and nav links */
+    }
+
+    .filters-section {
+        flex-direction: column; /* Stack filter groups vertically */
+        align-items: flex-start; /* Align filter groups to the start */
+        gap: 15px;
+        margin-top: 20px; /* Add some space above filters on mobile */
+    }
+
+    .filter-group {
+        flex-direction: column; /* Stack label and buttons/select */
+        align-items: flex-start;
+        width: 100%; /* Full width for filter group */
+    }
+
+    .filter-label {
+        margin-bottom: 5px; /* Space below label */
+    }
+
+    .filter-btn, .filter-select {
+        width: 100%; /* Full width for buttons and selects */
+        text-align: left; /* Align text to left */
+    }
 }

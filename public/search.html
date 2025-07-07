@@ -1,147 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <base href="/">
-  <title>Search - Nstream</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/"> <title>Search - Nstream</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/search.css"> 
 </head>
 <body>
-  <header class="header">
-    <nav class="nav-container">
-      <div class="logo">
-        <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
-      </div>
-      
-      <div class="search-section">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search movies, TV shows..." oninput="handleSearch()">
-      </div>
-      
-      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-        <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
-        <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
-        <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
-      </button>
-      
-      <div class="nav-content" id="navContent">
-        <ul class="nav-links">
-          <li><a href="/mainpage">Home</a></li>
-          <li><a href="/search" class="active">Search</a></li>
-          <li><a href="/favorites">Favorites</a></li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img"> 
+            </div>
+            
+            <div class="search-section">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search movies, TV shows..." oninput="handleSearch()">
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
+                <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
+                <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
+            </button>
+            
+            <div class="nav-content" id="navContent">
+                <ul class="nav-links">
+                    <li><a href="/mainpage">Home</a></li>
+                    <li><a href="/search" class="active">Search</a></li>
+                    <li><a href="/favorites">Favorites</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
-  <main class="main-content">
-    <div class="filters-section">
-      <div class="filter-group">
-        <span class="filter-label">Type:</span>
-        <button class="filter-btn active" onclick="filterByType('all')" data-type="all">All</button>
-        <button class="filter-btn" onclick="filterByType('movie')" data-type="movie">Movies</button>
-        <button class="filter-btn" onclick="filterByType('series')" data-type="series">Series</button>
-      </div>
-      
-      <div class="filter-group">
-        <span class="filter-label">Genre:</span>
-        <select class="filter-select" id="genreFilter" onchange="filterByGenre()">
-          <option value="all">All Genres</option>
-          <option value="action">Action</option>
-          <option value="drama">Drama</option>
-          <option value="comedy">Comedy</option>
-          <option value="sci-fi">Sci-Fi</option>
-          <option value="horror">Horror</option>
-          <option value="romance">Romance</option>
-          <option value="thriller">Thriller</option>
-          <option value="animation">Animation</option>
-          <option value="documentary">Documentary</option>
-        </select>
-      </div>
+    <main class="main-content">
+        <div class="filters-section">
+            <div class="filter-group">
+                <span class="filter-label">Type:</span>
+                <button class="filter-btn active" onclick="filterByType('all')" data-type="all">All</button>
+                <button class="filter-btn" onclick="filterByType('movie')" data-type="movie">Movies</button>
+                <button class="filter-btn" onclick="filterByType('series')" data-type="series">Series</button>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">Genre:</span>
+                <select class="filter-select" id="genreFilter" onchange="filterByGenre()">
+                    <option value="all">All Genres</option>
+                    <option value="action">Action</option>
+                    <option value="drama">Drama</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="horror">Horror</option>
+                    <option value="romance">Romance</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="animation">Animation</option>
+                    <option value="documentary">Documentary</option>
+                </select>
+            </div>
 
-      <div class="filter-group">
-        <span class="filter-label">Sort by:</span>
-        <select class="filter-select" id="sortFilter" onchange="sortBy()">
-          <option value="none">None</option>
-          <option value="popularity">Popularity</option>
-          <option value="views">Views</option>
-          <option value="rating">Rating</option>
-          <option value="year">Year</option>
-        </select>
-      </div>
+            <div class="filter-group">
+                <span class="filter-label">Sort by:</span>
+                <select class="filter-select" id="sortFilter" onchange="sortBy()">
+                    <option value="none">None</option>
+                    <option value="popularity">Popularity</option>
+                    <option value="views">Views</option>
+                    <option value="rating">Rating</option>
+                    <option value="year">Year</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="results-info" id="resultsInfo">
+            Showing 12 results
+        </div>
+
+        <div class="content-grid" id="contentGrid"></div>
+    </main>
+
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"></div>
+            <div class="modal-body">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div class="modal-type" id="modalType"></div>
+                <div class="modal-description" id="modalDescription"></div>
+                <div class="modal-info-section">
+                    <div class="info-column">
+                        <div class="info-row">
+                            <span class="info-label">Genre/s:</span>
+                            <span class="info-value" id="modalGenre"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Studio:</span>
+                            <span class="info-value" id="modalStudio"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Release Date:</span>
+                            <span class="info-value" id="modalReleaseDate"></span>
+                        </div>
+                        <div class="info-row" id="modalStatusRow" style="display: none;">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value" id="modalStatus"></span>
+                        </div>
+                    </div>
+                    <div class="info-column">
+                        <div class="info-row">
+                            <span class="info-label">Views:</span>
+                            <span class="info-value" id="modalViews"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Popularity:</span>
+                            <span class="info-value" id="modalPopularity"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Rating:</span>
+                            <span class="info-value" id="modalRating"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Parental Guidance:</span>
+                            <span class="info-value" id="modalParentalGuidance"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="action-btn watch-now-btn" id="watchNowBtn" onclick="watchNow()">
+                        <i class="fas fa-play"></i>
+                        <span>Watch Now</span>
+                    </button>
+                    <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+                        <i class="fas fa-heart"></i>
+                        <span id="likeText">Like</span>
+                    </button>
+                </div>
+                <div class="episodes-section" id="episodesSection" style="display: none;">
+                    <h3 class="episodes-title">Episodes</h3>
+                    <div id="episodesList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal-body">
+    <div class="video-player-container" style="display: none;">
+        <video id="modalVideoPlayer" controls autoplay muted width="100%" height="auto"></video>
     </div>
 
-    <div class="results-info" id="resultsInfo">
-      Showing 12 results
+    <div class="user-actions">
+        <button class="action-btn watch-now-btn" onclick="watchNow()">
+            <i class="fas fa-play"></i> <span id="watchNowText">Watch Now</span>
+        </button>
+        <button id="likeBtn" class="action-btn" onclick="toggleLike()">
+            <i class="fas fa-thumbs-up"></i> <span id="likeText">Like</span>
+        </button>
     </div>
 
-    <div class="content-grid" id="contentGrid"></div>
-  </main>
-
-  <div id="contentModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header"></div>
-      <div class="modal-body">
-        <h2 class="modal-title" id="modalTitle"></h2>
-        <div class="modal-type" id="modalType"></div>
-        <div class="modal-description" id="modalDescription"></div>
-        <div class="modal-info-section">
-          <div class="info-column">
-            <div class="info-row">
-              <span class="info-label">Genre/s:</span>
-              <span class="info-value" id="modalGenre"></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Studio:</span>
-              <span class="info-value" id="modalStudio"></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Release Date:</span>
-              <span class="info-value" id="modalReleaseDate"></span>
-            </div>
-            <div class="info-row" id="modalStatusRow" style="display: none;">
-              <span class="info-label">Status:</span>
-              <span class="info-value" id="modalStatus"></span>
-            </div>
-          </div>
-          <div class="info-column">
-            <div class="info-row">
-              <span class="info-label">Views:</span>
-              <span class="info-value" id="modalViews"></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Popularity:</span>
-              <span class="info-value" id="modalPopularity"></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Rating:</span>
-              <span class="info-value" id="modalRating"></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Parental Guidance:</span>
-              <span class="info-value" id="modalParentalGuidance"></span>
-            </div>
-          </div>
-        </div>
-        <div class="user-actions">
-          <button class="action-btn watch-now-btn" id="watchNowBtn" onclick="watchNow()">
-            <i class="fas fa-play"></i>
-            <span>Watch Now</span>
-          </button>
-          <button class="action-btn" id="likeBtn" onclick="toggleLike()">
-            <i class="fas fa-heart"></i>
-            <span id="likeText">Like</span>
-          </button>
-        </div>
-        <div class="episodes-section" id="episodesSection" style="display: none;">
-          <h3 class="episodes-title">Episodes</h3>
-          <div id="episodesList"></div>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <script src="scripts/search.js"></script>
+    <script src="scripts/search.js"></script> 
 </body>
 </html>
