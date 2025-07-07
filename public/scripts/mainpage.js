@@ -650,3 +650,139 @@ function closeInfoModal() {
     infoModal.style.display = 'none';
   }
 }
+function goToWatchPage(item) {
+  localStorage.setItem("watchingItem", JSON.stringify(item));
+  window.location.href = 'watch.html';
+}
+// STEP 2: Profile Management Functions
+
+// Get all stored profiles
+function getProfiles() {
+  return JSON.parse(sessionStorage.getItem("profiles")) || [];
+}
+
+// Set the current profile (when switching)
+function setCurrentProfile(profile) {
+  sessionStorage.setItem("currentProfile", JSON.stringify(profile));
+  updateNavbarProfile(profile); // Step 3: Update navbar immediately
+  location.reload(); // Optional: Refresh page to apply changes
+}
+
+// Get the current active profile
+function getCurrentProfile() {
+  return JSON.parse(sessionStorage.getItem("currentProfile"));
+}
+
+// STEP 3: Update navbar avatar dynamically
+function updateNavbarProfile(profile) {
+  const avatarEl = document.querySelector(".profile-avatar");
+  if (avatarEl && profile) {
+    avatarEl.src = profile.avatar || "assets/images/default-avatar.png";
+    avatarEl.alt = profile.name;
+  }
+}
+
+// Transfer Profile Modal Logic
+function openChangeProfileModal() {
+  const modal = document.getElementById("changeProfileModal");
+  const list = document.getElementById("changeProfileList");
+  const profiles = getProfiles();
+
+  list.innerHTML = "";
+
+  profiles.forEach(profile => {
+    const div = document.createElement("div");
+    div.className = "profile-card";
+    div.innerHTML = `
+      <img src="${profile.avatar}" alt="${profile.name}" />
+      <p>${profile.name}</p>
+    `;
+    div.onclick = () => {
+      setCurrentProfile(profile);     // store to sessionStorage
+      closeChangeProfileModal();     // close modal
+    };
+    list.appendChild(div);
+  });
+
+  modal.style.display = "flex";
+}
+
+function closeChangeProfileModal() {
+  const modal = document.getElementById("changeProfileModal");
+  if (modal) modal.style.display = "none";
+}
+
+// Show dropdown menu for profile actions
+function toggleProfileMenu() {
+  const dropdown = document.getElementById("profileDropdown");
+  if (dropdown) dropdown.classList.toggle("hidden");
+}
+
+// On page load, auto-update navbar if profile exists
+window.onload = () => {
+  const profile = getCurrentProfile();
+  if (profile) {
+    updateNavbarProfile(profile);
+  }
+};
+window.onload = () => {
+  const profile = getCurrentProfile();
+  if (!profile) {
+    window.location.href = "profiles.html"; // or your profile select page
+  } else {
+    updateNavbarProfile(profile);
+  }
+};
+function getProfiles() {
+  // Pull from localStorage — these are the ones created in manage.js
+  return JSON.parse(localStorage.getItem("profiles")) || [];
+}
+
+function setCurrentProfile(profile) {
+  // Save selected profile into sessionStorage (active session only)
+  sessionStorage.setItem("currentProfile", JSON.stringify(profile));
+  updateNavbarProfile(profile);
+  location.reload(); // Optional: Refresh to re-render based on new profile
+}
+
+function openChangeProfileModal() {
+  const modal = document.getElementById("changeProfileModal");
+  const list = document.getElementById("changeProfileList");
+  const profiles = getProfiles(); // ← pulling from localStorage
+
+  list.innerHTML = "";
+
+  profiles.forEach(profile => {
+    const div = document.createElement("div");
+    div.className = "profile-card";
+    div.innerHTML = `
+      <img src="${profile.avatar}" alt="${profile.name}" />
+      <p>${profile.name}</p>
+    `;
+    div.onclick = () => {
+      setCurrentProfile(profile); // ← store to sessionStorage
+      closeChangeProfileModal(); // ← close modal
+    };
+    list.appendChild(div);
+  });
+
+  modal.style.display = "flex";
+}
+
+function closeChangeProfileModal() {
+  document.getElementById("changeProfileModal").style.display = "none";
+}
+function updateNavbarProfile(profile) {
+  const avatarEl = document.querySelector(".profile-avatar");
+  if (avatarEl && profile) {
+    avatarEl.src = profile.avatar;
+    avatarEl.alt = profile.name;
+  }
+}
+
+window.onload = () => {
+  const profile = JSON.parse(sessionStorage.getItem("currentProfile"));
+  if (profile) updateNavbarProfile(profile);
+};
+
+

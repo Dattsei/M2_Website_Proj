@@ -6,12 +6,12 @@
   <base href="/">
   <title>Search - Nstream</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/search.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <header class="header">
     <nav class="nav-container">
-     <div class="logo">
+      <div class="logo">
         <img src="assets/images/trans logo.png" alt="Nstream Logo" class="logo-img">
       </div>
       
@@ -25,16 +25,15 @@
         <span style="display: inline-block; width: 20px; height: 2px; background: #fff; margin: 3px 0; transition: 0.3s;"></span>
       </button>
       
-    <div class="nav-content" id="navContent">
+      <div class="nav-content" id="navContent">
         <ul class="nav-links">
           <li><a href="/mainpage">Home</a></li>
           <li><a href="/search" class="active">Search</a></li>
           <li><a href="/favorites">Favorites</a></li>
         </ul>
       </div>
-      
     </nav>
-</header>
+  </header>
 
   <main class="main-content">
     <div class="filters-section">
@@ -77,79 +76,71 @@
       Showing 12 results
     </div>
 
-    <div class="content-grid" id="contentGrid">
-      </div>
+    <div class="content-grid" id="contentGrid"></div>
   </main>
 
-  <!-- REPLACE THE OLD MODAL IN search.html WITH THIS -->
-
-<div id="contentModal" class="modal" alt="Centered Image">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="video-placeholder">
-        <i class="fas fa-play-circle"></i>
-      </div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <h2 class="modal-title" id="modalTitle"></h2>
-      <div class="modal-type" id="modalType"></div>
-      <div class="modal-description" id="modalDescription"></div>
-      <div class="modal-info-section">
-        <div class="info-column">
-          <div class="info-row">
-            <span class="info-label">Genre/s:</span>
-            <span class="info-value" id="modalGenre"></span>
+  <div id="contentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"></div>
+      <div class="modal-body">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-type" id="modalType"></div>
+        <div class="modal-description" id="modalDescription"></div>
+        <div class="modal-info-section">
+          <div class="info-column">
+            <div class="info-row">
+              <span class="info-label">Genre/s:</span>
+              <span class="info-value" id="modalGenre"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Studio:</span>
+              <span class="info-value" id="modalStudio"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Release Date:</span>
+              <span class="info-value" id="modalReleaseDate"></span>
+            </div>
+            <div class="info-row" id="modalStatusRow" style="display: none;">
+              <span class="info-label">Status:</span>
+              <span class="info-value" id="modalStatus"></span>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-label">Studio:</span>
-            <span class="info-value" id="modalStudio"></span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Release Date:</span>
-            <span class="info-value" id="modalReleaseDate"></span>
-          </div>
-          <div class="info-row" id="modalStatusRow" style="display: none;">
-            <span class="info-label">Status:</span>
-            <span class="info-value" id="modalStatus"></span>
-          </div>
-        </div>
-        <div class="info-column">
-          <div class="info-row">
-            <span class="info-label">Views:</span>
-            <span class="info-value" id="modalViews"></span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Popularity:</span>
-            <span class="info-value" id="modalPopularity"></span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Rating:</span>
-            <span class="info-value" id="modalRating"></span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Parental Guidance:</span>
-            <span class="info-value" id="modalParentalGuidance"></span>
+          <div class="info-column">
+            <div class="info-row">
+              <span class="info-label">Views:</span>
+              <span class="info-value" id="modalViews"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Popularity:</span>
+              <span class="info-value" id="modalPopularity"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rating:</span>
+              <span class="info-value" id="modalRating"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Parental Guidance:</span>
+              <span class="info-value" id="modalParentalGuidance"></span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="user-actions">
-        <button class="action-btn watch-now-btn" id="watchNowBtn" onclick="watchNow()">
-          <i class="fas fa-play"></i>
-          <span>Watch Now</span>
-        </button>
-        <button class="action-btn" id="likeBtn" onclick="toggleLike()">
-          <i class="fas fa-heart"></i>
-          <span id="likeText">Like</span>
-        </button>
-      </div>
-      <div class="episodes-section" id="episodesSection" style="display: none;">
-        <h3 class="episodes-title">Episodes</h3>
-        <div id="episodesList"></div>
+        <div class="user-actions">
+          <button class="action-btn watch-now-btn" id="watchNowBtn" onclick="watchNow()">
+            <i class="fas fa-play"></i>
+            <span>Watch Now</span>
+          </button>
+          <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+            <i class="fas fa-heart"></i>
+            <span id="likeText">Like</span>
+          </button>
+        </div>
+        <div class="episodes-section" id="episodesSection" style="display: none;">
+          <h3 class="episodes-title">Episodes</h3>
+          <div id="episodesList"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <script src="scripts/search.js"></script>
 </body>
