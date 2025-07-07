@@ -1,4 +1,53 @@
 // DOM Elements
+
+// Add this to the beginning of your watchpage.js file, before the existing code
+
+// Load the selected video content
+function loadVideoContent() {
+  const watchContent = JSON.parse(sessionStorage.getItem('currentWatchContent'));
+  const videoFile = sessionStorage.getItem('currentVideoFile');
+  
+  if (watchContent && videoFile) {
+    // Update video source
+    const videoSource = document.getElementById('videoSource');
+    const video = document.getElementById('moviePlayer');
+    
+    videoSource.src = videoFile;
+    video.load(); // Reload the video with new source
+    
+    // Update video information in the UI
+    document.getElementById('movieTitle').textContent = watchContent.seriesTitle || watchContent.title;
+    document.getElementById('movieGenre').textContent = watchContent.genre || 'Unknown';
+    document.getElementById('movieRating').textContent = watchContent.parentalGuidance || 'Not Rated';
+    
+    // For episodes, show episode info
+    if (watchContent.type === 'episode') {
+      const episodeInfo = `S${watchContent.season}E${watchContent.episode}: ${watchContent.title}`;
+      document.getElementById('movieTitle').textContent = `${watchContent.seriesTitle} - ${episodeInfo}`;
+    }
+    
+    // Update page title
+    document.title = `Watch ${watchContent.seriesTitle || watchContent.title} - Nstream`;
+    
+    console.log('Loaded video:', videoFile);
+  } else {
+    console.warn('No video content found in sessionStorage');
+    // Fallback to default video
+    document.getElementById('movieTitle').textContent = 'Demo Video';
+  }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', loadVideoContent);
+
+// Also call it if the DOM is already ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadVideoContent);
+} else {
+  loadVideoContent();
+}
+
+
 const video = document.getElementById('moviePlayer');
 const overlay = document.getElementById('videoOverlay');
 const playBtn = document.getElementById('playBtn');

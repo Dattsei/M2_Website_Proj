@@ -13,7 +13,8 @@ const contentData = [
     views: 2500000,
     viewsFormatted: "2.5M",
     description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-    poster: "assets/images/dark-knight.jpg"
+    poster: "assets/images/dark-knight.jpg",
+    videoFile: "assets/videos/darknight.mp4"
   },
   {
     id: 2,
@@ -31,6 +32,7 @@ const contentData = [
     viewsFormatted: "5.2M",
     description: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future.",
     poster: "assets/images/breaking-bad.jpg",
+    videoFile: "assets/videos/breaking-bad.mp4",
     episodes: [
       {
         id: 1,
@@ -43,7 +45,8 @@ const contentData = [
         viewsFormatted: "1.4M",
         duration: "58 min",
         season: 1,
-        episode: 1
+        episode: 1,
+        videoFile: "assets/videos/breaking-bad-s1e1.mp4"
       },
       {
         id: 2,
@@ -56,7 +59,8 @@ const contentData = [
         viewsFormatted: "1.2M",
         duration: "48 min",
         season: 1,
-        episode: 2
+        episode: 2,
+        videoFile: "assets/videos/breaking-bad-s1e2.mp4"
       }
     ]
   },
@@ -74,7 +78,8 @@ const contentData = [
     views: 3100000,
     viewsFormatted: "3.1M",
     description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-    poster: "assets/images/inception.jpg"
+    poster: "assets/images/inception.jpg",
+    videoFile: "assets/videos/inception.mp4"
   },
   {
     id: 4,
@@ -92,6 +97,7 @@ const contentData = [
     viewsFormatted: "4.8M",
     description: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.",
     poster: "assets/images/stranger-things.jpg",
+    videoFile: "assets/videos/stranger-things.mp4",
     episodes: [
       {
         id: 1,
@@ -104,7 +110,8 @@ const contentData = [
         viewsFormatted: "2.1M",
         duration: "47 min",
         season: 1,
-        episode: 1
+        episode: 1,
+        videoFile: "assets/videos/stranger-things-s1e1.mp4"
       }
     ]
   },
@@ -122,7 +129,8 @@ const contentData = [
     views: 2800000,
     viewsFormatted: "2.8M",
     description: "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
-    poster: "assets/images/pulp-fiction.jpg"
+    poster: "assets/images/pulp-fiction.jpg",
+    videoFile: "assets/videos/pulp-fiction.mp4"
   },
   {
     id: 6,
@@ -140,6 +148,7 @@ const contentData = [
     viewsFormatted: "6.2M",
     description: "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium.",
     poster: "assets/images/the-office.jpg",
+    videoFile: "assets/videos/the-office.mp4",
     episodes: [
       {
         id: 1,
@@ -152,7 +161,8 @@ const contentData = [
         viewsFormatted: "800K",
         duration: "22 min",
         season: 1,
-        episode: 1
+        episode: 1,
+        videoFile: "assets/videos/the-office-s1e1.mp4"
       }
     ]
   }
@@ -358,6 +368,9 @@ function openModal(item) {
               </div>
             </div>
             <div class="episode-description">${episode.description}</div>
+            <button class="episode-watch-btn" onclick="watchEpisode(${item.id}, ${episode.id})">
+              <i class="fas fa-play"></i> Watch Episode
+            </button>
           </div>
         </div>
       </div>
@@ -381,19 +394,19 @@ function openModal(item) {
 }
 
 function getCurrentProfile() {
-  return JSON.parse(localStorage.getItem("currentProfile"));
+  return JSON.parse(sessionStorage.getItem("currentProfile"));
 }
 
 function getFavorites() {
   const profile = getCurrentProfile();
   if (!profile) return [];
-  return JSON.parse(localStorage.getItem(`favorites_${profile.name}`)) || [];
+  return JSON.parse(sessionStorage.getItem(`favorites_${profile.name}`)) || [];
 }
 
 function saveFavorites(favorites) {
   const profile = getCurrentProfile();
   if (!profile) return;
-  localStorage.setItem(`favorites_${profile.name}`, JSON.stringify(favorites));
+  sessionStorage.setItem(`favorites_${profile.name}`, JSON.stringify(favorites));
 }
 
 function toggleLike() {
@@ -462,7 +475,59 @@ function resetUserActions() {
 }
 
 function watchNow() {
-  alert('No Player Yet');
+  const modalTitle = document.getElementById('modalTitle').textContent;
+  const content = contentData.find(item => item.title === modalTitle);
+  
+  if (!content) {
+    alert('Content not found');
+    return;
+  }
+  
+  if (!content.videoFile) {
+    alert('Video file not available');
+    return;
+  }
+  
+  // Store the content data and video file path for the watch page
+  sessionStorage.setItem('currentWatchContent', JSON.stringify(content));
+  sessionStorage.setItem('currentVideoFile', content.videoFile);
+  
+  // Navigate to watch page
+  window.location.href = 'watchpage.html';
+}
+
+function watchEpisode(seriesId, episodeId) {
+  const series = contentData.find(item => item.id === seriesId);
+  if (!series || !series.episodes) {
+    alert('Series not found');
+    return;
+  }
+  
+  const episode = series.episodes.find(ep => ep.id === episodeId);
+  if (!episode) {
+    alert('Episode not found');
+    return;
+  }
+  
+  if (!episode.videoFile) {
+    alert('Episode video file not available');
+    return;
+  }
+  
+  // Create episode content object for watch page
+  const episodeContent = {
+    ...episode,
+    seriesTitle: series.title,
+    seriesId: series.id,
+    type: 'episode'
+  };
+  
+  // Store the episode data and video file path for the watch page
+  sessionStorage.setItem('currentWatchContent', JSON.stringify(episodeContent));
+  sessionStorage.setItem('currentVideoFile', episode.videoFile);
+  
+  // Navigate to watch page
+  window.location.href = 'watchpage.html';
 }
 
 function closeModal() {
@@ -493,11 +558,11 @@ function closeLearnMore() {
 }
 
 function getProfiles() {
-  return JSON.parse(localStorage.getItem("profiles")) || [];
+  return JSON.parse(sessionStorage.getItem("profiles")) || [];
 }
 
 function setCurrentProfile(profile) {
-  localStorage.setItem("currentProfile", JSON.stringify(profile));
+  sessionStorage.setItem("currentProfile", JSON.stringify(profile));
   updateNavbarProfile(profile);
 }
 
