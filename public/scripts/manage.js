@@ -34,14 +34,32 @@ function renderProfiles() {
   }
 }
 
-function addNewProfile() {
+async function addNewProfile() {
+  // FIX: Get current plan limits from backend
+  const response = await fetch('/api/user/plan');
+  const planData = await response.json();
+  const maxProfiles = planData.maxProfiles || 1;
+  
   const profiles = getProfiles();
+  
+  // FIX: Enforce plan-based profile limits
+  if (profiles.length >= maxProfiles) {
+    alert(`You've reached the maximum ${maxProfiles} profiles for your plan`);
+    return;
+  }
+  
   const newId = Date.now();
+  
+  // FIX: Use random avatar from available options
+  const avatarNumber = Math.floor(Math.random() * 4) + 1;
+  const avatarPath = `assets/images/avatar${avatarNumber}.jpg`;
+  
   profiles.push({
     id: newId,
     name: "New User",
-    avatar: "https://placehold.co/120x120"
+    avatar: avatarPath
   });
+  
   saveProfiles(profiles);
   renderProfiles();
 }

@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
+    
+    (async function checkLogin() {
+    try {
+      const res = await fetch('http://localhost:4800/api/user-id', {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert("You're not logged in. Redirecting to login.");
+        window.location.href = '/login';
+      }
+    } catch (err) {
+      console.error('Login check failed:', err);
+    }
+    })();
+
     const tabButtons = document.querySelectorAll('.tab-btn');
     const paymentForms = document.querySelectorAll('.payment-form');
     const agreeCheckbox = document.getElementById('agree-checkbox');
@@ -6,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const redirectNote = document.querySelector('.redirect-note');
     
     let selectedMethod = 'card';
-    let currentPlan = 'basic';
+    let currentPlan = 'Basic';
 
     // Initialize
     loadSavedData();
@@ -282,17 +298,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function handleStartMembership() {
-        if (startButton.disabled) return;
-        
-        startButton.textContent = 'Processing...';
-        startButton.disabled = true;
-        
-        setTimeout(() => {
-            localStorage.removeItem('paymentFormData');
-            window.location.href = '/mainpage';
-        }, 2000);
+    async function handleStartMembership() {
+    if (startButton.disabled) return;
+
+    startButton.textContent = 'Processing...';
+    startButton.disabled = true;
+
+    try {
+        console.log('Sending payment request:', {
+        plan: currentPlan,
+        paymentMethod: selectedMethod
+        });
+
+        const response = await fetch('http://localhost:4800/api/subscription', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            plan: currentPlan,
+            paymentMethod: selectedMethod
+        })
+        });
+
+        // Safely log response inside try block
+        console.log('Response status:', response.status);
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error(`Server responded with ${response.status}: ${text.substring(0, 100)}`);
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (!data.success) {
+        throw new Error(data.message || 'Subscription failed');
+        }
+
+        localStorage.removeItem('paymentFormData');
+        window.location.href = '/mainpage';
+
+    } catch (error) {
+        console.error('Full payment error:', error);
+
+        let userMessage = 'Payment failed. Please try again.';
+        if (error.message.includes('card')) {
+        userMessage = 'Card payment failed. Please check your card details.';
+        } else if (error.message.includes('plan')) {
+        userMessage = 'Invalid subscription plan. Please select a different plan.';
+        } else if (error.message.includes('session')) {
+        userMessage = 'Session expired. Please login again.';
+        } else if (error.message.includes('Mongo')) {
+        userMessage = 'Database connection issue. Try again later.';
+        }
+
+        alert(`Payment Error: ${userMessage}`);
+        startButton.textContent = 'Start Membership';
+        startButton.disabled = false;
     }
+    }
+
 
     // Auto-save on input changes - only for currently selected method
     document.querySelectorAll('.form-input, .country-select').forEach(input => {

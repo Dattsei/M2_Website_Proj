@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
           const data = await response.json();
           if (data.success) {
-            window.location.href = '/mainpage'; // Redirect on success
+            showWarning('registerWarning', '✅ Registration successful! Redirecting...', true);
+            // FIX: Redirect to subscription page
+            setTimeout(() => window.location.href = '/subscription', 1500);
           } else {
             showWarning('loginWarning', data.message || 'Login failed');
           }
