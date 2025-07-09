@@ -24,9 +24,22 @@ const subscriptionSchema = new mongoose.Schema({
         enum: ['card', 'digital', 'mobile'],
         required: true
     },
-    
+    paymentDetails: {
+        identifier: { type: String, required: true },
+        // For cards
+        cardHolder: String,
+        cardLast4: String,
+        cardBrand: String,
+        expiry: String,
+        // For digital/mobile
+        countryCode: String,
+        phoneNumber: String
+    },
     autoRenew: { type: Boolean, default: true }
 });
+
+// Add index for payment identifier to speed up duplicate checks
+subscriptionSchema.index({ 'paymentDetails.identifier': 1 });
 
 // Add index for expiration and status
 subscriptionSchema.index({ expirationDate: 1, status: 1 });

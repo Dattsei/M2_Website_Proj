@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const validatePassword = (password) => password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password);
   
     // ======================
-    // LOGIN FORM HANDLING (updated to /api/login)
+    // LOGIN FORM HANDLING (UPDATED)
     // ======================
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const email = document.getElementById('email');
         const password = document.getElementById('password');
-  
+
         // Client-side validation
         if (!validateEmail(email.value)) {
           showError(email, 'Invalid email');
@@ -62,23 +62,28 @@ document.addEventListener('DOMContentLoaded', () => {
           showError(password, 'Password must be 8+ chars with uppercase, lowercase, and number');
           return;
         }
-  
+
         try {
-          // Updated endpoint: /api/login (matches your backend)
-          const response = await fetch('/api/login', {
+          const response = await fetch('api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               email: email.value, 
               password: password.value 
-            })
+            }),
+            credentials: 'include'
           });
-  
+
           const data = await response.json();
           if (data.success) {
-            showWarning('registerWarning', '✅ Registration successful! Redirecting...', true);
-            // FIX: Redirect to subscription page
-            setTimeout(() => window.location.href = '/subscription', 1500);
+            // CHECK SUBSCRIPTION STATUS AND REDIRECT ACCORDINGLY
+            if (data.hasSubscription) {
+              showWarning('loginWarning', '✅ Login successful! Redirecting to main page...', true);
+              setTimeout(() => window.location.href = '/mainpage', 1500);
+            } else {
+              showWarning('loginWarning', '✅ Login successful! Please choose a subscription plan', true);
+              setTimeout(() => window.location.href = '/subscription', 1500);
+            }
           } else {
             showWarning('loginWarning', data.message || 'Login failed');
           }
@@ -120,22 +125,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
   
         try {
-          // Updated endpoint: /api/register (matches your backend)
-          const response = await fetch('/api/register', {
+          const response = await fetch('api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               name: name.value.trim(),
               email: email.value.trim(),
               password: password.value,
-              confirmPassword: confirmPassword.value // Include confirmPassword for backend validation
+              confirmPassword: confirmPassword.value
             })
           });
-  
+
           const data = await response.json();
           if (data.success) {
             showWarning('registerWarning', '✅ Registration successful! Redirecting...', true);
-            setTimeout(() => window.location.href = '/login', 1500);
+            // REDIRECT TO SUBSCRIPTION PAGE
+            setTimeout(() => window.location.href = '/subscription', 1500);
           } else {
             showWarning('registerWarning', data.message || 'Registration failed');
             if (data.message.includes('Email already in use')) {
@@ -148,4 +153,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
-  });
+  }
+);

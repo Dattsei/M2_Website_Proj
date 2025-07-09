@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // Profile sub-schema
 const profileSchema = new mongoose.Schema({
@@ -84,6 +85,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['card', 'digital', 'mobile', null],
     default: null
+  },
+  paymentDetails: {
+    cardNumber: { type: String, select: false },
+    digitalWallet: String,
+    mobileNumber: String
   },
   lastPaymentDate: Date, // Track last successful payment
   isAdmin: { 

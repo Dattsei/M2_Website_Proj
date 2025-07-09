@@ -26,9 +26,16 @@ const Content = require('./public/models/content');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// Session middleware 
+// Add after your static file configuration
+app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
+app.use('/scripts', express.static(path.join(__dirname, 'public', 'scripts')));
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
+
+
+// ======================
+// SESSION MIDDLEWARE (UPDATED)
+// ======================
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -50,9 +57,57 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add session refresh middleware
+app.use(async (req, res, next) => {
+  if (req.session.user?.id) {
+    try {
+      // Refresh subscription status
+      const subscription = await Subscription.findOne({
+        userId: req.session.user.id,
+        status: 'Active',
+        expirationDate: { $gt: new Date() }
+      });
+      
+      // Update session with current status
+      req.session.user.hasSubscription = !!subscription;
+      if (subscription) {
+        req.session.user.plan = subscription.plan;
+      }
+    } catch (error) {
+      console.error('Session refresh error:', error);
+    }
+  }
+  next();
+});
+
+// ======================
+// SUBSCRIPTION REQUIREMENT MIDDLEWARE (UPDATED)
+// ======================
+const requireSubscription = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  
+  // Allow access to subscription and payment pages
+  if (req.path.startsWith('/subscription') || req.path.startsWith('/payment-method')) {
+    return next();
+  }
+  
+  // Check if user has active subscription
+  if (!req.session.user.hasSubscription) {
+    return res.redirect('/subscription');
+  }
+  
+  next();
+};
+
+// Apply to protected routes
+app.use(['/mainpage', '/watchpage', '/favorites', '/search', '/account'], requireSubscription);
+
 // ======================
 // SERVE PAGE FUNCTION
 // ======================
+// Update the servePage function
 const servePage = (page) => (req, res) => {
   res.sendFile(path.join(__dirname, 'public', `${page}.html`));
 };
@@ -151,8 +206,78 @@ app.get('/api/routes', (req, res) => {
 // API ROUTES
 // ======================
 
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'User Not Recognized, Please Register' 
+      });
+    }
+
+    // Compare passwords
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid email or password' 
+      });
+    }
+
+    // Get active subscription
+    const subscription = await Subscription.findOne({ 
+      userId: user._id,
+      status: 'Active',
+      expirationDate: { $gt: new Date() }
+    });
+
+    // Calculate subscription status
+    const hasSubscription = subscription && 
+                           subscription.status === 'Active' && 
+                           subscription.expirationDate > new Date();
+
+    // Create session
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      plan: subscription ? subscription.plan : 'Basic',
+      hasSubscription: !!hasSubscription
+    };
+
+    // Send SINGLE response
+    res.json({ 
+      success: true, 
+      message: 'Login successful!',
+      user: req.session.user,
+      hasSubscription: !!hasSubscription
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Login failed. Please try again.',
+      error: error.message
+    });
+  }
+});
+
 // Registration endpoint (Updated with profile creation)
 app.post('/api/register', async (req, res) => {
+  // Add this validation at the start:
+  if (!req.body.name || !req.body.email || !req.body.password) {
+    return res.status(400).json({
+      success: false,
+      message: 'All fields are required'
+    });
+  }
+  
   try {
     const { name, email, password, confirmPassword } = req.body;
 
@@ -170,14 +295,12 @@ app.post('/api/register', async (req, res) => {
         message: 'Email already in use' 
       });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create user with default profile
     const newUser = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password, // <-- Save plain password (let model handle hashing)
       profiles: [{
         name: name,
         avatar: 'assets/images/avatar1.jpg'
@@ -203,62 +326,10 @@ app.post('/api/register', async (req, res) => {
 
   } catch (error) {
     console.error('Registration error:', error);
+    // Add detailed error message
     res.status(500).json({ 
       success: false, 
-      message: 'Registration failed. Please try again.' 
-    });
-  }
-});
-
-// Login endpoint
-app.post('/api/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'User Not Recognized, Please Register' 
-      });
-    }
-
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid email or password' 
-      });
-    }
-
-    // Get active subscription
-    const subscription = await Subscription.findOne({ 
-      userId: user._id, 
-      status: 'Active' 
-    });
-    
-    // Login successful - create session with plan info
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      // FIX: Add plan information to session
-      plan: subscription ? subscription.plan : 'Basic'
-    };
-
-    res.json({ 
-      success: true, 
-      message: 'Login successful!',
-      user: req.session.user
-    });
-
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Login failed. Please try again.' 
+      message: `Registration failed: ${error.message}` 
     });
   }
 });
@@ -545,28 +616,30 @@ async function getPlanLimits(userId) {
 // SUBSCRIPTION ENDPOINTS (FIXED)
 // ======================
 
-app.get('/api/user-id', (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-  res.json({ success: true, userId: req.session.user.id });
-});
+// Helper function to get card brand
+function getCardBrand(cardNumber) {
+  const cleaned = cardNumber.replace(/\s/g, '');
+  if (/^4/.test(cleaned)) return 'Visa';
+  if (/^5[1-5]/.test(cleaned)) return 'Mastercard';
+  if (/^3[47]/.test(cleaned)) return 'American Express';
+  if (/^6(?:011|5)/.test(cleaned)) return 'Discover';
+  return 'Unknown';
+}
 
 // User subscription endpoint (Handles new subscriptions and plan changes)
 app.post('/api/subscription', async (req, res) => {
-  console.log('Session user:', req.session.user);
   try {
     console.log('=== SUBSCRIPTION REQUEST START ===');
     console.log('Request body:', req.body);
-    console.log('Session user:', req.session.user);  // 👈 Check if this logs correctly
+    console.log('Session user:', req.session.user);
     
-    let { plan, paymentMethod } = req.body;
+    let { plan, paymentMethod, paymentDetails } = req.body;
     
     // Validate required fields
-    if (!plan || !paymentMethod) {
+    if (!plan || !paymentMethod || !paymentDetails) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Plan and payment method are required' 
+        message: 'Plan, payment method, and payment details are required' 
       });
     }
     
@@ -608,6 +681,46 @@ app.post('/api/subscription', async (req, res) => {
     
     console.log('Plan found:', planDoc);
     
+    // Generate payment identifier for duplicate check
+    let paymentIdentifier;
+    
+    if (paymentMethod === 'card') {
+      const cardNumber = paymentDetails.cardNumber.replace(/\s/g, '');
+      if (!/^\d{13,19}$/.test(cardNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid card number'
+        });
+      }
+      paymentIdentifier = `${getCardBrand(cardNumber)}:${cardNumber.slice(-4)}`;
+    } else if (paymentMethod === 'digital' || paymentMethod === 'mobile') {
+      // Create full phone number with country code
+      paymentIdentifier = `${paymentDetails.countryCode}${paymentDetails.phoneNumber}`;
+      
+      if (!/^\+\d{1,3}\d{7,15}$/.test(paymentIdentifier)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid phone number format'
+        });
+      }
+    }
+    
+    console.log(`Payment identifier: ${paymentIdentifier}`);
+    
+    // Check for duplicate payment method (only for new subscriptions)
+    const existingPaymentMethod = await Subscription.findOne({
+      'paymentDetails.identifier': paymentIdentifier,
+      userId: { $ne: userId }
+    });
+    
+    if (existingPaymentMethod) {
+      console.log(`Duplicate payment method found: ${paymentIdentifier} used by user ${existingPaymentMethod.userId}`);
+      return res.status(400).json({
+        success: false,
+        message: 'This payment method is already in use by another account'
+      });
+    }
+
     // Check for existing subscription
     const existingSubscription = await Subscription.findOne({ 
       userId, 
@@ -626,6 +739,10 @@ app.post('/api/subscription', async (req, res) => {
       existingSubscription.plan = plan;
       existingSubscription.price = planDoc.price;
       existingSubscription.paymentMethod = paymentMethod;
+      existingSubscription.paymentDetails = {
+        identifier: paymentIdentifier,
+        ...paymentDetails
+      };
       existingSubscription.dateSubscribed = new Date();
       existingSubscription.expirationDate = expirationDate;
       
@@ -641,13 +758,28 @@ app.post('/api/subscription', async (req, res) => {
         dateSubscribed: new Date(),
         expirationDate,
         paymentMethod,
+        paymentDetails: {
+          identifier: paymentIdentifier,
+          ...paymentDetails
+        },
         status: 'Active'
       });
       await subscription.save();
     }
     
-    console.log('Subscription saved:', subscription);
-    
+    console.log('Subscription saved:', subscription.toObject());
+
+    req.session.user.plan = plan;
+    req.session.user.hasSubscription = true;
+
+    // Save session properly
+    await new Promise((resolve, reject) => {
+      req.session.save(err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
     // Create mock payment record
     const revenue = new Revenue({
       subscriptionId: subscription._id,
@@ -751,7 +883,7 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
 });
 
 // Get all subscriptions
-app.get('/api/admin/subscriptions', requireAdmin, async (req, res) => {
+app.get('/api/admin/subscription', requireAdmin, async (req, res) => {
   try {
     const subscriptions = await Subscription.find().populate('userId', 'name email');
     res.json({ success: true, subscriptions });
@@ -812,18 +944,6 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
 });
 
 // ======================
-// ERROR HANDLING
-// ======================
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ success: false, message: 'Server error' });
-});
-
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
-// ======================
 // CONTENT ROUTES
 // ======================
 app.use('/api/upload', require('./public/routes/uploads'));
@@ -831,6 +951,9 @@ app.use('/api/upload', require('./public/routes/uploads'));
 // ======================
 // VIEW ROUTES
 // ======================
+// This must come AFTER all your route definitions
+
+// View routes
 app.get('/', servePage('index'));
 app.get('/admin', servePage('admin'));
 app.get('/favorites', servePage('favorites'));
@@ -844,6 +967,26 @@ app.get('/profiles', servePage('profiles'));
 app.get('/search', servePage('search'));
 app.get('/subscription', servePage('subscription'));
 app.get('/watchpage', servePage('watchpage'));
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, path) => {
+    // Set proper caching headers
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+  }
+}));
+
+// ======================
+// ERROR HANDLING
+// ======================
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ success: false, message: 'Server error' });
+});
+
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
 // ======================
 // INITIALIZE PLANS
 // ======================
