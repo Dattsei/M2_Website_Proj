@@ -1,16 +1,22 @@
 let currentEditingProfileId = null;
 
-function getProfiles() {
-  return JSON.parse(localStorage.getItem("profiles")) || [];
+async function getProfiles() {
+  try {
+    const response = await fetch('/api/user');
+    const data = await response.json();
+    if (data.success) {
+      return data.profiles;
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching profiles:', error);
+    return [];
+  }
 }
 
-function saveProfiles(profiles) {
-  localStorage.setItem("profiles", JSON.stringify(profiles));
-}
-
-function renderProfiles() {
+async function renderProfiles() {
   const grid = document.getElementById("profileGrid");
-  const profiles = getProfiles();
+  const profiles = await getProfiles();
   grid.innerHTML = "";
 
   profiles.forEach(profile => {
@@ -19,13 +25,18 @@ function renderProfiles() {
     card.innerHTML = `
       <img src="${profile.avatar}" class="profile-avatar" alt="${profile.name}">
       <div class="profile-name">${profile.name}</div>
-      <button class="edit-btn" onclick="editProfile(${profile.id})">Edit</button>
-      <button class="edit-btn delete-btn" onclick="deleteProfile(${profile.id})">Delete</button>
+      <button class="edit-btn" onclick="editProfile('${profile._id}')">Edit</button>
+      <button class="edit-btn delete-btn" onclick="deleteProfile('${profile._id}')">Delete</button>
     `;
     grid.appendChild(card);
   });
 
-  if (profiles.length < 5) {
+  // Get plan limits
+  const planResponse = await fetch('/api/user/plan');
+  const planData = await planResponse.json();
+  const maxProfiles = planData.maxProfiles || 1;
+
+  if (profiles.length < maxProfiles) {
     const addCard = document.createElement("div");
     addCard.className = "profile-card add-profile";
     addCard.onclick = addNewProfile;
@@ -34,32 +45,69 @@ function renderProfiles() {
   }
 }
 
-function addNewProfile() {
-  const profiles = getProfiles();
-  const newId = Date.now();
-  profiles.push({
-    id: newId,
-    name: "New User",
-    avatar: "https://placehold.co/120x120"
-  });
-  saveProfiles(profiles);
-  renderProfiles();
-}
+async function addNewProfile() {
+  try {
+    const planResponse = await fetch('/api/user/plan');
+    const planData = await planResponse.json();
+    const maxProfiles = planData.maxProfiles || 1;
 
-function deleteProfile(profileId) {
-  let profiles = getProfiles();
-  if (profiles.length <= 1) {
-    alert("At least one profile is required.");
-    return;
+    const profiles = await getProfiles();
+    if (profiles.length >= maxProfiles) {
+      alert(`You've reached the maximum ${maxProfiles} profiles for your plan`);
+      return;
+    }
+
+    // Generate avatar
+    const avatarNumber = Math.floor(Math.random() * 4) + 1;
+    const avatarPath = `assets/images/avatar${avatarNumber}.jpg`;
+
+    // Create profile
+    const response = await fetch('/api/profiles', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: "New User",
+        avatar: avatarPath
+      })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      renderProfiles();
+    } else {
+      alert('Failed to create profile: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Error adding profile:', error);
+    alert('An error occurred while adding the profile');
   }
-  profiles = profiles.filter(p => p.id !== profileId);
-  saveProfiles(profiles);
-  renderProfiles();
 }
 
-function editProfile(profileId) {
-  const profile = getProfiles().find(p => p.id === profileId);
+async function deleteProfile(profileId) {
+  try {
+    const response = await fetch('/api/profiles', {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ profileId })  // Send profile ID
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      renderProfiles();
+    } else {
+      alert('Failed to delete profile: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+    alert('An error occurred while deleting the profile');
+  }
+}
+
+async function editProfile(profileId) {
+  const profiles = await getProfiles();
+  const profile = profiles.find(p => p._id === profileId);
   if (!profile) return;
+  
   currentEditingProfileId = profileId;
   document.getElementById("profileName").value = profile.name;
   document.getElementById("currentAvatar").src = profile.avatar;
@@ -70,26 +118,38 @@ function closeEditProfile() {
   document.getElementById("editProfileModal").style.display = "none";
 }
 
-function saveProfile() {
-  const profiles = getProfiles();
-  const idx = profiles.findIndex(p => p.id === currentEditingProfileId);
-  if (idx !== -1) {
-    profiles[idx].name = document.getElementById("profileName").value.trim() || "Unnamed";
-    profiles[idx].avatar = document.getElementById("currentAvatar").src;
-    saveProfiles(profiles);
-    renderProfiles();
-    closeEditProfile();
+async function saveProfile() {
+  const name = document.getElementById("profileName").value.trim() || "Unnamed";
+  const avatar = document.getElementById("currentAvatar").src;
+
+  try {
+    const response = await fetch('/api/profiles', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        profileId: currentEditingProfileId,
+        name,
+        avatar
+      })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      renderProfiles();
+      closeEditProfile();
+    } else {
+      alert('Failed to update profile: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    alert('An error occurred while updating the profile');
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!localStorage.getItem("profiles")) {
-    saveProfiles([
-      { id: 1, name: "User 1", avatar: "https://placehold.co/120x120" }
-    ]);
-  }
-  renderProfiles();
+document.addEventListener("DOMContentLoaded", async () => {
+  await renderProfiles();
 });
+
 const avatarList = [
   "assets/images/avatar1.jpg",
   "assets/images/avatar2.jpg",

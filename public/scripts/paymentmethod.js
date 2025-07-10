@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const redirectNote = document.querySelector('.redirect-note');
     
     let selectedMethod = 'card';
-    let currentPlan = 'basic';
+    let currentPlan = 'Basic';
 
     // Initialize
     loadSavedData();
@@ -282,16 +282,139 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function handleStartMembership() {
+    async function handleStartMembership() {
         if (startButton.disabled) return;
         
         startButton.textContent = 'Processing...';
         startButton.disabled = true;
         
-        setTimeout(() => {
+        try {
+            // Collect payment details based on selected method
+            let paymentDetails = {};
+            
+            if (selectedMethod === 'card') {
+                paymentDetails = {
+                    cardNumber: document.getElementById('card-number').value,
+                    cardHolder: document.getElementById('card-name').value,
+                    expiry: document.getElementById('card-expiry').value
+                };
+            } else if (selectedMethod === 'digital') {
+                paymentDetails = {
+                    countryCode: document.getElementById('digital-country').value,
+                    phoneNumber: document.getElementById('digital-phone').value
+                };
+            } else if (selectedMethod === 'mobile') {
+                paymentDetails = {
+                    countryCode: document.getElementById('mobile-country').value,
+                    phoneNumber: document.getElementById('mobile-phone').value
+                };
+            }
+
+            console.log('Sending payment request:', {
+                plan: currentPlan,
+                paymentMethod: selectedMethod,
+                paymentDetails: paymentDetails
+            });
+            
+            if (!selectedMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            if (!currentPlan) {
+                alert('Please select a subscription plan');
+                return;
+            }
+
+            const response = await fetch('/api/subscription', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    plan: currentPlan,
+                    paymentMethod: selectedMethod,
+                    paymentDetails: paymentDetails
+                })
+            });
+
+              // Set subscription start date
+            const startDate = new Date();
+            const expirationDate = new Date();
+            expirationDate.setMonth(expirationDate.getMonth() + 1);
+            
+            // Add to request body
+            body: JSON.stringify({ 
+                plan: currentPlan,
+                paymentMethod: selectedMethod,
+                paymentDetails: paymentDetails,
+                startDate: startDate,
+                expirationDate: expirationDate
+            })
+
+            console.log('Response status:', response.status);
+            
+            // Handle non-JSON responses
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text.substring(0, 200));
+                throw new Error(`Server responded with ${response.status}: ${text.substring(0, 100)}`);
+            }
+
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            if (!data.success) {
+                // Handle duplicate payment method error specifically
+                if (data.message.includes('already in use')) {
+                    throw new Error('DUPLICATE_PAYMENT: ' + data.message);
+                }
+                throw new Error(data.message || 'Subscription failed');
+            }
+
             localStorage.removeItem('paymentFormData');
             window.location.href = '/mainpage';
-        }, 2000);
+            
+        } catch (error) {
+            console.error('Full payment error:', error);
+            
+            // Detailed error messages
+            let userMessage = 'Payment failed. Please try again.';
+            
+            if (error.message.includes('card')) {
+                userMessage = 'Card payment failed. Please check your card details.';
+            } else if (error.message.includes('DUPLICATE_PAYMENT')) {
+                userMessage = error.message.replace('DUPLICATE_PAYMENT: ', '');
+            } else if (error.message.includes('plan')) {
+                userMessage = 'Invalid subscription plan. Please select a different plan.';
+            } else if (error.message.includes('session')) {
+                userMessage = 'Session expired. Please login again.';
+            } else if (error.message.includes('Mongo')) {
+                userMessage = 'Database connection issue. Try again later.';
+            } else if (error.message.includes('phone number')) {
+                userMessage = 'Invalid phone number format. Please enter a valid number.';
+            }
+            
+            // Create and show error message element
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'payment-error';
+            errorMessage.textContent = userMessage;
+            errorMessage.style.color = '#e50914';
+            errorMessage.style.margin = '10px 0';
+            errorMessage.style.padding = '10px';
+            errorMessage.style.borderRadius = '4px';
+            errorMessage.style.backgroundColor = '#fff3f4';
+            errorMessage.style.textAlign = 'center';
+            errorMessage.style.fontWeight = 'bold';
+            
+            // Insert before the start button
+            const existingError = document.querySelector('.payment-error');
+            if (existingError) existingError.remove();
+            
+            startButton.parentElement.insertBefore(errorMessage, startButton);
+            
+            startButton.textContent = 'Start Membership';
+            startButton.disabled = false;
+        }
     }
 
     // Auto-save on input changes - only for currently selected method

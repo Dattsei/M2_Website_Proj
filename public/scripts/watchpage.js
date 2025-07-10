@@ -1,4 +1,5 @@
 // DOM Elements
+
 const video = document.getElementById('moviePlayer');
 const overlay = document.getElementById('videoOverlay');
 const playBtn = document.getElementById('playBtn');
@@ -18,6 +19,74 @@ let isSettingsOpen = false;
 let currentQuality = 'auto';
 let playbackSpeed = 1;
 
+// Add this function at the top of your watchpage.js file, before initializePlayer()
+
+function loadMovieData() {
+  const watchingItem = localStorage.getItem("watchingItem");
+  if (watchingItem) {
+    const item = JSON.parse(watchingItem);
+    
+    // Update the video info in the overlay
+    document.getElementById('movieTitle').textContent = item.title;
+    document.getElementById('movieGenre').textContent = item.genre.charAt(0).toUpperCase() + item.genre.slice(1);
+    document.getElementById('movieRating').textContent = `${item.rating}/10`;
+    
+    // Update the page title
+    document.title = `Watch ${item.title} - Nstream`;
+    
+    // You can also update the video source here if you have different video files
+    // const videoSource = document.getElementById('videoSource');
+    // videoSource.src = `assets/movies/${item.title.toLowerCase().replace(/\s+/g, '-')}.mp4`;
+    
+    console.log('Now watching:', item.title);
+  } else {
+    console.log('No movie data found, using default');
+  }
+}
+
+// Update the initialize function to load movie data first
+function initializePlayer() {
+  loadMovieData(); // Load movie data first
+  video.volume = 0.5;
+  volumeSlider.value = 50;
+  setupEventListeners();
+  showControls();
+}
+
+// Update the goBack function to clear the stored movie data
+function goBack() {
+  if (confirm('Are you sure you want to go back?')) {
+    // Clear the watching item from localStorage
+    localStorage.removeItem("watchingItem");
+    
+    // Try different navigation methods
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Fallback to main page if no history
+      window.location.href = "mainpage.html";
+    }
+  }
+}
+
+// Add this function to handle episode watching for series
+function watchEpisode(episodeId) {
+  const watchingItem = localStorage.getItem("watchingItem");
+  if (watchingItem) {
+    const item = JSON.parse(watchingItem);
+    if (item.type === 'series' && item.episodes) {
+      const episode = item.episodes.find(ep => ep.id === episodeId);
+      if (episode) {
+        // Update the display for the specific episode
+        document.getElementById('movieTitle').textContent = `${item.title} - S${episode.season}E${episode.episode}: ${episode.title}`;
+        console.log('Now watching episode:', episode.title);
+      }
+    }
+  }
+}
+
+// Rest of your existing watchpage.js code remains the same...
+// (All the existing DOM elements, state variables, and functions)
 // Initialize Video Player
 function initializePlayer() {
   video.volume = 0.5;

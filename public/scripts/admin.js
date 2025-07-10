@@ -32,6 +32,21 @@ window.onload = () => {
   setupEventListeners();
 };
 
+async function uploadToR2(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData
+  });
+
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Upload failed');
+  return data.url;
+}
+
+
 // Setup event listeners
 function setupEventListeners() {
   const posterFiles = document.getElementById('posterFiles');
@@ -249,47 +264,66 @@ function handleThumbnailFile(input) {
 }
 
 // Save Content
-function saveContent(event) {
+async function saveContent(event) {
   event.preventDefault();
-  
-  const thumbnailFile = document.getElementById('thumbnailFile').files[0];
-  const content = createContentObject();
-  
-  if (thumbnailFile) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      content.thumbnail = e.target.result;
-      saveContentData(content);
-    };
-    reader.readAsDataURL(thumbnailFile);
-  } else if (currentEditingIndex !== null && movieList[currentEditingIndex]?.thumbnail) {
-    content.thumbnail = movieList[currentEditingIndex].thumbnail;
-    saveContentData(content);
-  } else {
-    saveContentData(content);
+
+  try {
+    const content = await createContentObjectWithUploads();
+
+    const res = await fetch('/api/admin/content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(content)
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Failed to save content');
+
+    movieList.push(content);
+    renderContentTable();
+    updateDashboard();
+    closeContentModal();
+    showNotification('Content saved successfully!');
+  } catch (err) {
+    console.error('Save error:', err);
+    showNotification(err.message, 'error');
   }
 }
 
-function createContentObject() {
-  const trailerFile = document.getElementById('trailerFile').files[0];
-  const movieVideoFile = document.getElementById('movieVideoFile')?.files[0];
-  
-  return {
-    type: document.getElementById('contentType').value,
-    title: document.getElementById('contentTitle').value,
-    description: document.getElementById('contentDescription').value,
-    studio: document.getElementById('contentStudio').value,
-    release: document.getElementById('contentRelease').value,
-    rating: document.getElementById('contentRating').value,
-    genres: [...selectedGenres],
-    posters: [...uploadedPosters],
-    thumbnail: null,
-    trailer: trailerFile?.name || null,
-    video: movieVideoFile?.name || null,
-    episodes: [...episodes]
-  };
-}
 
+
+    async function createContentObjectWithUploads() {
+      const trailerFile = document.getElementById('trailerFile').files[0];
+      const movieVideoFile = document.getElementById('movieVideoFile')?.files[0];
+      const thumbnailFile = document.getElementById('thumbnailFile').files[0];
+      const posterFiles = Array.from(document.getElementById('posterFiles').files);
+    
+      const type = document.getElementById('contentType').value;
+    
+      const [trailerUrl, movieUrl, thumbnailUrl, posterUrls] = await Promise.all([
+        trailerFile ? uploadToR2(trailerFile) : null,
+        type === 'Movie' && movieVideoFile ? uploadToR2(movieVideoFile) : null,
+        thumbnailFile ? uploadToR2(thumbnailFile) : null,
+        Promise.all(posterFiles.map(file => uploadToR2(file)))
+      ]);
+    
+      return {
+        type,
+        title: document.getElementById('contentTitle').value,
+        description: document.getElementById('contentDescription').value,
+        studio: document.getElementById('contentStudio').value,
+        releaseDate: document.getElementById('contentRelease').value,
+        rating: document.getElementById('contentRating').value,
+        genres: [...selectedGenres],
+        posters: posterUrls,
+        thumbnail: thumbnailUrl,
+        trailerUrl,
+        movieUrl,
+        episodes: type === 'Series' ? [...episodes] : [],
+        duration: 0
+      };
+    }
+    
 function saveContentData(content) {
   if (currentEditingIndex !== null) {
     movieList[currentEditingIndex] = content;
@@ -766,3 +800,5 @@ function showNotification(message, type = 'success') {
     notification.remove();
   }, 3000);
 }
+
+
