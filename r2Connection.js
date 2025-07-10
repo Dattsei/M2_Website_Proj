@@ -11,12 +11,12 @@ const client = new S3Client({
 
 async function connectR2() {
   try {
-    console.log('☐ Connecting to Cloudflare R2...');
+    console.log('⏳ Connecting to Cloudflare R2...');
     await client.send(new ListObjectsV2Command({
       Bucket: process.env.R2_BUCKET_NAME,
       MaxKeys: 1
     }));
-    console.log('☑ Cloudflare R2 connected successfully');
+    console.log('✅ Cloudflare R2 connected successfully');
     return client;
   } catch (error) {
     console.error('☒ R2 Connection Error:', error.message);

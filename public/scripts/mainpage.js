@@ -845,5 +845,3 @@ window.onload = () => {
   const profile = JSON.parse(sessionStorage.getItem("currentProfile"));
   if (profile) updateNavbarProfile(profile);
 };
-
-
