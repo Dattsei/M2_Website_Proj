@@ -20,13 +20,17 @@
   },
   "homepage": "https://github.com/Dattsei/M2_Website_Proj#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.842.0",
     "bcryptjs": "^3.0.2",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "mongoose": "^8.16.0"
+    "mongoose": "^8.16.0",
+    "multer": "^2.0.1",
+    "strnum": "^2.1.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

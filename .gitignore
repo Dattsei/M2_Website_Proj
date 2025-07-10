@@ -1,3 +1,4 @@
+# Your existing rules remain unchanged
 # Logs
 logs
 *.log
@@ -135,11 +136,32 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+<<<<<<< HEAD
 public/assets/
+=======
+# ==============================================
+# NEW ADDITIONS FOR MEDIA FILES AND ASSETS
+# ==============================================
+
+# Media files (videos, images, audio)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wmv
+*.flv
+*.mpg
+*.mpeg
+*.3gp
+
+# Image files
+>>>>>>> fe79f6a90aa93b01a37908d1cf6e634a7b1502fb
 *.jpg
 *.jpeg
 *.png
 *.gif
+<<<<<<< HEAD
 *.bmp
 *.tiff
 *.svg
@@ -159,3 +181,28 @@ public/assets/
 *.flac
 *.aac
 *.ogg
+=======
+*.svg
+*.bmp
+*.tiff
+*.webp
+*.ico
+*.psd
+*.ai
+
+# Audio files
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.aac
+*.wma
+*.m4a
+
+# Specific asset folders (adjust paths to match your project structure)
+/assets/videos/
+/assets/images/
+/public/uploads/
+/temp_uploads/
+/static/media/
+>>>>>>> fe79f6a90aa93b01a37908d1cf6e634a7b1502fb
