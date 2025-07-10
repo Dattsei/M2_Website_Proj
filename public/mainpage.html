@@ -31,24 +31,27 @@
         </a>
         <div class="profile-menu">
           <button class="profile-btn" onclick="toggleProfileMenu()">
-            <img src="/assets/images/profile-avatar.png" alt="Profile" class="profile-avatar" />
+              <img src="assets/images/avatar1.jpg" alt="Profile" class="profile-avatar" />
           </button>
+
           <div id="profileDropdown" class="dropdown hidden">
             <ul>
-              <li onclick="location.href='manage-profiles.html'">
+              <li onclick="location.href='/manage-profiles'">
                 <i class="fas fa-pencil-alt"></i> Manage Profiles
               </li>
               <li onclick="openChangeProfileModal()">
                 <i class="fas fa-right-left"></i> Transfer Profile
               </li>
-              <li onclick="location.href='account.html'">
+              <li onclick="location.href='/account'">
                 <i class="fas fa-user-cog"></i> Account
               </li>
               <li onclick="openHelpCenter()">
                 <i class="fas fa-question-circle"></i> Help Center
               </li>
               <hr />
-              <li><i class="fas fa-sign-out-alt"></i> Sign out of Nstream</li>
+              <li onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sign out of Nstream
+              </li>
             </ul>
           </div>
         </div>

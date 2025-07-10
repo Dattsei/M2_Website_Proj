@@ -336,6 +336,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
 
+              // Set subscription start date
+            const startDate = new Date();
+            const expirationDate = new Date();
+            expirationDate.setMonth(expirationDate.getMonth() + 1);
+            
+            // Add to request body
+            body: JSON.stringify({ 
+                plan: currentPlan,
+                paymentMethod: selectedMethod,
+                paymentDetails: paymentDetails,
+                startDate: startDate,
+                expirationDate: expirationDate
+            })
+
             console.log('Response status:', response.status);
             
             // Handle non-JSON responses

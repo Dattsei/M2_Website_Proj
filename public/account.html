@@ -9,77 +9,261 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
+  <!-- Loader -->
+  <div id="loader" class="loader hidden">
+    <div class="spinner"></div>
+  </div>
+
   <div class="account-container">
     <h1>Account Settings</h1>
+    <a href="/mainpage" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Main</a>
+
+    <section class="account-section">
+      <h2>Account Information</h2>
+      <div class="account-row">
+        <div class="account-item">
+          <span class="account-label">Name:</span>
+          <span id="nameDisplay" class="account-value">Loading...</span>
+          <button class="link-btn" onclick="editName()">Edit</button>
+        </div>
+        <div class="account-item">
+          <span class="account-label">Email:</span>
+          <span id="emailDisplay" class="account-value">Loading...</span>
+          <button class="link-btn" onclick="editEmail()">Change</button>
+        </div>
+      </div>
+    </section>
 
     <section class="account-section">
       <h2>Membership & Billing</h2>
       <div class="account-row">
-        <p>Email: <strong>user@example.com</strong></p>
-        <p>Password: ******** <button class="link-btn" onclick="editPassword()">Change</button></p>
-        <p>Plan: <strong id="planDisplay">Premium</strong> 
-  <button class="link-btn" onclick="editPlan()">Change Plan</button>
-
-</p>
-
-
-
+        <div class="account-item">
+          <span class="account-label">Plan:</span>
+          <span id="planDisplay" class="account-value">Loading...</span>
+          <button class="link-btn" onclick="editPlan()">Change Plan</button>
+          <button class="link-btn danger" onclick="cancelSubscription()">Cancel Subscription</button>
+        </div>
+        <div class="account-item">
+          <span class="account-label">Expiration:</span>
+          <span id="expirationDisplay" class="account-value">Loading...</span>
+        </div>
+        <div class="account-item">
+          <span class="account-label">Payment Method:</span>
+          <span id="paymentDisplay" class="account-value">Loading...</span>
+          <button class="link-btn" onclick="editPayment()">Update</button>
+        </div>
       </div>
     </section>
 
     <section class="account-section">
-      <h2>Profiles & Parental Controls</h2>
-      <div id="profileList" class="profile-list">
-        <!-- Will be loaded from localStorage -->
+      <h2>Password</h2>
+      <div class="account-row">
+        <div class="account-item">
+          <button class="link-btn" onclick="editPassword()">Change Password</button>
+        </div>
       </div>
     </section>
-<!-- Password Modal -->
-<div id="passwordModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closePasswordModal()">&times;</span>
-    <h2>Change Password</h2>
-    <input type="password" id="newPassword" placeholder="Enter new password" />
-    <button class="link-btn" onclick="savePassword()">Save</button>
-  </div>
-</div>
 
-<!-- Plan Modal -->
-<div id="planModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closePlanModal()">&times;</span>
-    <h2>Select Your Plan</h2>
-    <div class="plan-options">
-      <div class="plan-card" onclick="selectPlan('Basic')">
-        <h3>Basic</h3>
-        <ul>
-          <li>Good video quality</li>
-          <li>Resolution: 480p</li>
-          <li>Watch on 1 screen</li>
-        </ul>
+    <section class="account-section">
+      <h2>Profiles</h2>
+      <div id="profileList" class="profile-list">
+        <!-- Profiles will be loaded dynamically -->
       </div>
-      <div class="plan-card" onclick="selectPlan('Standard')">
-        <h3>Standard</h3>
-        <ul>
-          <li>Better video quality</li>
-          <li>Resolution: 1080p</li>
-          <li>Watch on 2 screens</li>
-        </ul>
+    </section>
+  </div>
+
+  <!-- Password Modal -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closePasswordModal()">&times;</span>
+      <h2>Change Password</h2>
+      <form id="passwordForm" onsubmit="savePassword(event)">
+        <div class="form-group">
+          <label for="oldPassword">Current Password</label>
+          <input type="password" id="oldPassword" placeholder="Enter current password" required>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" placeholder="Enter new password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
+        </div>
+        <div class="btn-group">
+          <button type="submit" class="cta-btn primary">Save Password</button>
+          <button type="button" class="cta-btn secondary" onclick="closePasswordModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Plan Modal -->
+  <div id="planModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closePlanModal()">&times;</span>
+      <h2>Change Plan</h2>
+      <div class="plan-options">
+        <div class="plan-card" data-plan="Basic" onclick="selectPlan('Basic')">
+          <h3>Basic</h3>
+          <div class="plan-features">
+            <ul>
+              <li>Good video quality</li>
+              <li>Resolution: 480p</li>
+              <li>Watch on 1 screen</li>
+              <li>1 Profile</li>
+            </ul>
+          </div>
+          <div class="plan-card-price">₱199/month</div>
+        </div>
+        <div class="plan-card" data-plan="Standard" onclick="selectPlan('Standard')">
+          <h3>Standard</h3>
+          <div class="plan-features">
+            <ul>
+              <li>Better video quality</li>
+              <li>Resolution: 1080p</li>
+              <li>Watch on 2 screens</li>
+              <li>3 Profiles</li>
+            </ul>
+          </div>
+          <div class="plan-card-price">₱399/month</div>
+        </div>
+        <div class="plan-card" data-plan="Premium" onclick="selectPlan('Premium')">
+          <h3>Premium</h3>
+          <div class="plan-features">
+            <ul>
+              <li>Best video quality</li>
+              <li>Resolution: 4K+HDR</li>
+              <li>Watch on 4 screens</li>
+              <li>5 Profiles</li>
+            </ul>
+          </div>
+          <div class="plan-card-price">₱549/month</div>
+        </div>
       </div>
-      <div class="plan-card" onclick="selectPlan('Premium')">
-        <h3>Premium</h3>
-        <ul>
-          <li>Best video quality</li>
-          <li>Resolution: 4K+HDR</li>
-          <li>Watch on 4 screens</li>
-        </ul>
+      <div class="btn-group">
+        <button class="cta-btn primary" onclick="saveSelectedPlan()">Confirm</button>
+        <button class="cta-btn secondary" onclick="closePlanModal()">Cancel</button>
       </div>
     </div>
-    <button class="link-btn" onclick="saveSelectedPlan()">Done</button>
   </div>
-</div>
 
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closePaymentModal()">&times;</span>
+      <h2>Update Payment Method</h2>
+      <form id="paymentForm" onsubmit="savePaymentMethod(event)">
+        <div class="form-group">
+          <label for="paymentPassword">Password</label>
+          <input type="password" id="paymentPassword" placeholder="Enter your password" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="paymentMethod">Payment Method</label>
+          <select id="paymentMethod" onchange="togglePaymentDetails()">
+            <option value="card">Credit/Debit Card</option>
+            <option value="mobile">Mobile Payment</option>
+          </select>
+        </div>
+        
+        <div id="cardDetails">
+          <div class="form-group">
+            <label for="cardHolder">Cardholder Name</label>
+            <input type="text" id="cardHolder" placeholder="Enter cardholder name" required>
+          </div>
+          <div class="form-group">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="text" id="expiryDate" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV</label>
+              <input type="text" id="cvv" placeholder="123" required>
+            </div>
+          </div>
+        </div>
+        
+        <div id="mobileDetails" class="hidden">
+          <div class="form-group">
+            <label for="countryCode">Country</label>
+            <select id="countryCode" required>
+              <option value="" disabled selected>Select Country</option>
+              <option value="+63">Philippines (+63)</option>
+              <option value="+1">USA (+1)</option>
+              <option value="+44">UK (+44)</option>
+              <option value="+81">Japan (+81)</option>
+              <option value="+61">Australia (+61)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="Enter phone number" required>
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="cta-btn primary">Save Payment Method</button>
+          <button type="button" class="cta-btn secondary" onclick="closePaymentModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<script src="scripts/account.js"></script>
+  <!-- Profile Reduction Modal -->
+  <div id="profileReductionModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeProfileReductionModal()">&times;</span>
+      <h2>Select Profiles to Keep</h2>
+      <p>You can only keep <span id="maxProfilesAllowed">2</span> profiles with this plan</p>
+      <div id="profileSelectionList" class="profile-selection-list"></div>
+      <div class="btn-group">
+        <button class="cta-btn primary" onclick="confirmProfileSelection()">Confirm</button>
+        <button class="cta-btn secondary" onclick="closeProfileReductionModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- Error Modal -->
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeErrorModal()">&times;</span>
+      <h2>Error</h2>
+      <p id="errorMessage">An error occurred. Please try again.</p>
+      <div class="btn-group">
+        <button class="cta-btn primary" onclick="closeErrorModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeSuccessModal()">&times;</span>
+      <h2>Success</h2>
+      <p id="successMessage">Operation completed successfully!</p>
+      <div class="btn-group">
+        <button class="cta-btn primary" onclick="closeSuccessModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add this to the body -->
+  <div id="loading-indicator" style="display: flex; justify-content: center; align-items: center; height: 50vh;">
+    <div class="spinner"></div>
+    <p>Loading account data...</p>
+  </div>
+
+  <div id="account-content" style="display: none;">
+    <!-- Existing account content -->
+  </div>
+
+  <div id="error-message" class="error-alert" style="display: none;"></div>
+
+  <script src="scripts/account.js"></script>
 </body>
 </html>

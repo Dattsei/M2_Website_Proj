@@ -780,6 +780,67 @@ function updateNavbarProfile(profile) {
   }
 }
 
+async function openChangeProfileModal() {
+  try {
+    const response = await fetch('/api/user');
+    const data = await response.json();
+    
+    if (data.success) {
+      const modal = document.getElementById("changeProfileModal");
+      const list = document.getElementById("changeProfileList");
+      list.innerHTML = "";
+      
+      data.profiles.forEach((profile, index) => {
+        const div = document.createElement("div");
+        div.className = "profile-card";
+        div.innerHTML = `
+          <img src="${profile.avatar}" alt="${profile.name}" />
+          <p>${profile.name}</p>
+        `;
+        div.onclick = () => switchProfile(index);
+        list.appendChild(div);
+      });
+      
+      modal.style.display = "flex";
+    }
+  } catch (error) {
+    console.error('Error fetching profiles:', error);
+  }
+}
+
+async function switchProfile(index) {
+  try {
+    const response = await fetch('/api/profiles/switch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index }),
+      credentials: 'include'
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      location.reload();
+    }
+  } catch (error) {
+    console.error('Error switching profile:', error);
+  }
+}
+
+
+// Add to mainpage.js
+function logout() {
+  fetch('/api/logout', {
+    method: 'POST',
+    credentials: 'include'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = '/login';
+    }
+  });
+}
+
 window.onload = () => {
   const profile = JSON.parse(sessionStorage.getItem("currentProfile"));
   if (profile) updateNavbarProfile(profile);

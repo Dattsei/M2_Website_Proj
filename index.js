@@ -38,24 +38,18 @@ app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 // ======================
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   store: MongoStore.create({ 
     mongoUrl: process.env.MONGO_URI,
     ttl: 14 * 24 * 60 * 60 // 14 days
   }),
-  cookie: { 
+  cookie: {
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
+    httpOnly: true,
+    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days
   }
 }));
-
-app.use((req, res, next) => {
-  if (!req.session.user) {
-    req.session.user = {}; // Initialize empty user session
-  }
-  next();
-});
 
 // Add session refresh middleware
 app.use(async (req, res, next) => {
@@ -79,6 +73,34 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
+app.use((req, res, next) => {
+  // Skip API and auth-related routes
+  if (req.path.startsWith('/api') || 
+      ['/login', '/register', '/subscription', '/payment-method', '/account'].includes(req.path)) {
+    return next();
+  }
+
+  if (req.session.user && !req.session.user.hasSubscription) {
+    return res.redirect('/subscription');
+  }
+  
+  next();
+});
+
+const requireAuth = (req, res, next) => {
+  if (!req.session.user?.id) {
+    if (req.path.startsWith('/api')) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Unauthorized' 
+      });
+    }
+    return res.redirect('/login');
+  }
+  next();
+};
+
 
 // ======================
 // SUBSCRIPTION REQUIREMENT MIDDLEWARE (UPDATED)
@@ -167,6 +189,19 @@ app.use((req, res, next) => {
 app.use('/api', (req, res, next) => {
   console.log(`API route hit: ${req.method} ${req.path}`);
   next();
+});
+// Set Content-Type for all API routes
+app.use('/api', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  next();
+});
+
+// Error handler for API routes
+app.use('/api', (err, req, res, next) => {
+  res.status(500).json({ 
+    success: false, 
+    message: err.message || 'Internal server error' 
+  });
 });
 
 // ======================
@@ -300,7 +335,7 @@ app.post('/api/register', async (req, res) => {
     const newUser = await User.create({
       name,
       email,
-      password, // <-- Save plain password (let model handle hashing)
+      password,
       profiles: [{
         name: name,
         avatar: 'assets/images/avatar1.jpg'
@@ -314,6 +349,7 @@ app.post('/api/register', async (req, res) => {
       email: newUser.email
     };
 
+    // Only send one response
     res.json({ 
       success: true, 
       message: 'Registration successful!',
@@ -326,13 +362,13 @@ app.post('/api/register', async (req, res) => {
 
   } catch (error) {
     console.error('Registration error:', error);
-    // Add detailed error message
     res.status(500).json({ 
       success: false, 
       message: `Registration failed: ${error.message}` 
     });
   }
 });
+
 
 // Logout endpoint
 app.post('/api/logout', (req, res) => {
@@ -363,6 +399,64 @@ app.get('/api/user-id', (req, res) => {
     success: true, 
     userId: req.session.user.id 
   });
+});
+
+app.put('/api/user/password', async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.session.user.id;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) return res.status(401).json({ success: false, message: 'Incorrect password' });
+    
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({ success: true, message: 'Password updated' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Password update failed' });
+  }
+});
+
+// ======================
+// ACCOUNT DATA ENDPOINT
+// ======================
+app.get('/api/account', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.user.id)
+      .select('name email profiles activeProfile');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    const subscription = await Subscription.findOne({
+      userId: req.session.user.id,
+      status: 'Active'
+    });
+
+    res.json({
+      success: true,
+      name: user.name,
+      email: user.email,
+      plan: subscription?.plan || 'None',
+      expiration: subscription?.expirationDate || null,
+      paymentMethod: subscription?.paymentMethod || 'None',
+      profiles: user.profiles
+    });
+  } catch (error) {
+    console.error('Account data error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error' 
+    });
+  }
 });
 
 // ======================
@@ -402,7 +496,7 @@ const requireAdmin = async (req, res, next) => {
 app.get('/api/user', async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const user = await User.findById(userId).select('profiles activeProfile');
+    const user = await User.findById(userId).select('name email profiles activeProfile');
     
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -410,6 +504,8 @@ app.get('/api/user', async (req, res) => {
     
     res.json({ 
       success: true, 
+      name: user.name, // Add this
+      email: user.email, // Add this
       profiles: user.profiles,
       activeProfile: user.activeProfile
     });
@@ -481,22 +577,36 @@ app.post('/api/profiles', async (req, res) => {
   }
 });
 
-// Delete profile
-app.delete('/api/profiles', async (req, res) => {
+// Delete profile by ID
+app.delete('/api/profiles/:id', async (req, res) => {
   try {
+    const profileId = req.params.id;
     const userId = req.session.user.id;
-    const { index } = req.body;
     
+    // Validate profileId
+    if (!mongoose.Types.ObjectId.isValid(profileId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid profile ID format'
+      });
+    }
+
     const user = await User.findById(userId);
+    const profileIndex = user.profiles.findIndex(p => p._id.toString() === profileId);
     
-    if (index >= user.profiles.length) {
+    // Find profile by ID
+    const profile = user.profiles.find(
+      p => p._id.toString() === profileId
+    );
+    
+    if (!profile) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Invalid profile index' 
+        message: 'Profile not found' 
       });
     }
     
-    // Can't delete the last profile
+    // Prevent deleting last profile
     if (user.profiles.length <= 1) {
       return res.status(400).json({ 
         success: false, 
@@ -504,11 +614,16 @@ app.delete('/api/profiles', async (req, res) => {
       });
     }
     
-    user.profiles.splice(index, 1);
+    user.profiles.splice(profileIndex, 1);
     
-    // Reset active profile if needed
-    if (user.activeProfile >= user.profiles.length) {
+    // Reset active profile if it was pointing to deleted profile
+    if (user.activeProfile === profileIndex) {
+      // Reset to first profile after deletion
       user.activeProfile = 0;
+    } 
+    // Adjust activeProfile index if it was after the deleted profile
+    else if (user.activeProfile > profileIndex) {
+      user.activeProfile--;
     }
     
     await user.save();
@@ -516,11 +631,16 @@ app.delete('/api/profiles', async (req, res) => {
     res.json({ 
       success: true, 
       message: 'Profile deleted successfully',
-      profiles: user.profiles
+      profiles: user.profiles,
+      activeProfile: user.activeProfile
     });
   } catch (error) {
     console.error('Profile delete error:', error);
-    res.status(500).json({ success: false, message: 'Failed to delete profile' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete profile',
+      error: error.message 
+    });
   }
 });
 
@@ -528,19 +648,20 @@ app.delete('/api/profiles', async (req, res) => {
 app.put('/api/profiles', async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const { index, name, avatar } = req.body;
+    const { profileId, name, avatar } = req.body;  // Now using profileId
     
     const user = await User.findById(userId);
+    const profile = user.profiles.id(profileId);  // Mongoose subdocument lookup
     
-    if (index >= user.profiles.length) {
+    if (!profile) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Invalid profile index' 
+        message: 'Profile not found' 
       });
     }
     
-    user.profiles[index].name = name;
-    if (avatar) user.profiles[index].avatar = avatar;
+    profile.name = name;
+    if (avatar) profile.avatar = avatar;
     
     await user.save();
     
@@ -727,36 +848,30 @@ app.post('/api/subscription', async (req, res) => {
       status: 'Active' 
     });
     
-    // Calculate expiration date (30 days from now)
+    // Update in subscription endpoint
     const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 30);
+    expirationDate.setDate(expirationDate.getDate() + 30); 
     
     let subscription;
     
+    // In subscription endpoint
     if (existingSubscription) {
-      console.log('Updating existing subscription');
-      // Update existing subscription (plan change)
-      existingSubscription.plan = plan;
-      existingSubscription.price = planDoc.price;
+      // Only update payment method for existing subscription
       existingSubscription.paymentMethod = paymentMethod;
       existingSubscription.paymentDetails = {
         identifier: paymentIdentifier,
         ...paymentDetails
       };
-      existingSubscription.dateSubscribed = new Date();
-      existingSubscription.expirationDate = expirationDate;
-      
       await existingSubscription.save();
       subscription = existingSubscription;
     } else {
-      console.log('Creating new subscription');
       // Create new subscription
       subscription = new Subscription({
         userId,
         plan,
         price: planDoc.price,
         dateSubscribed: new Date(),
-        expirationDate,
+        expirationDate: expirationDate, // 30 days from now
         paymentMethod,
         paymentDetails: {
           identifier: paymentIdentifier,
@@ -811,7 +926,7 @@ app.post('/api/subscription', async (req, res) => {
     
     console.log('=== SUBSCRIPTION SUCCESS ===');
     
-    // Return success response
+    // Return the expiration date in the response
     return res.status(200).json({ 
       success: true,
       message: existingSubscription ? 
@@ -821,10 +936,8 @@ app.post('/api/subscription', async (req, res) => {
         id: subscription._id,
         plan: subscription.plan,
         price: subscription.price,
-        status: subscription.status
-      },
-      user: {
-        plan: plan
+        status: subscription.status,
+        expirationDate: subscription.expirationDate // Ensure this is included
       }
     });
     
@@ -849,6 +962,265 @@ app.post('/api/subscription', async (req, res) => {
       message: `Payment processing failed: ${error.message}`,
       error: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
+  }
+});
+
+// Verify Password
+app.post('/api/verify-password', async (req, res) => {
+  try {
+    const { password } = req.body;
+    const userId = req.session.user.id;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    const isMatch = await user.comparePassword(password);
+    res.json({ success: isMatch });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Update User
+app.put('/api/user', async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const updates = req.body;
+    
+    const user = await User.findByIdAndUpdate(userId, updates, { new: true });
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Update failed' });
+  }
+});
+
+// Cancel Subscription Endpoint
+app.delete('/api/subscription', async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    
+    // Find active subscription
+    const subscription = await Subscription.findOne({ 
+      userId, 
+      status: 'Active'
+    });
+    
+    if (!subscription) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No active subscription found' 
+      });
+    }
+    
+    // Check if subscription is at least 3 days old
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    
+    if (subscription.dateSubscribed > threeDaysAgo) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'You can only cancel after 3 days of subscription' 
+      });
+    }
+    
+    // Mark as cancelled
+    subscription.status = 'Cancelled';
+    await subscription.save();
+    
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Cancellation failed' });
+  }
+});
+
+// Create/Update Subscription Endpoint
+app.post('/api/subscription', async (req, res) => {
+  try {
+    const { plan } = req.body;
+    const userId = req.session.user.id;
+
+    // Validate plan
+    if (!['Basic', 'Standard', 'Premium'].includes(plan)) {
+      return res.status(400).json({ success: false, message: 'Invalid plan selected' });
+    }
+
+    // Find existing subscription
+    let existingSubscription = await Subscription.findOne({ userId });
+    
+    if (existingSubscription) {
+      // Update existing subscription
+      existingSubscription.plan = plan;
+      existingSubscription.price = getPlanPrice(plan); // Helper function to get price
+      existingSubscription.expirationDate = calculateExpirationDate(); // Helper function to calculate expiration
+      await existingSubscription.save();
+      
+      return res.json({ 
+        success: true,
+        message: 'Subscription updated successfully',
+        subscription: {
+          id: existingSubscription._id,
+          plan: existingSubscription.plan,
+          price: existingSubscription.price,
+          status: existingSubscription.status,
+          expirationDate: existingSubscription.expirationDate
+        }
+      });
+    }
+    
+    // Create new subscription
+    const newSubscription = new Subscription({
+      userId,
+      plan,
+      price: getPlanPrice(plan),
+      status: 'Active',
+      dateSubscribed: new Date(),
+      expirationDate: calculateExpirationDate()
+    });
+    
+    await newSubscription.save();
+    
+    res.json({ 
+      success: true,
+      message: 'Subscription created successfully',
+      subscription: {
+        id: newSubscription._id,
+        plan: newSubscription.plan,
+        price: newSubscription.price,
+        status: newSubscription.status,
+        expirationDate: newSubscription.expirationDate
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Subscription processing failed' });
+  }
+});
+
+// Helper function to calculate expiration date (30 days from now)
+function calculateExpirationDate() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date;
+}
+
+// Helper function to get plan price
+function getPlanPrice(plan) {
+  const prices = {
+    'Basic': 199,
+    'Standard': 399,
+    'Premium': 549
+  };
+  return prices[plan] || 0;
+}
+
+
+// Add this to your backend routes
+app.post('/api/subscription/change-plan', async (req, res) => {
+  try {
+    // Add validation
+    if (!req.body.plan) {
+      return res.status(400).json({
+        success: false,
+        message: 'Plan is required'
+      });
+    }
+    
+    const userId = req.session.user.id;
+    
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    // Get plan details
+    const planDoc = await Plan.findOne({ name: plan });
+    if (!planDoc) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid plan selected: ${plan}`
+      });
+    }
+    
+    // Get existing subscription
+    const subscription = await Subscription.findOne({ 
+      userId, 
+      status: 'Active' 
+    });
+    
+    if (!subscription) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'No active subscription found' 
+      });
+    }
+    
+    // Check if plan change is allowed (at least 3 days before expiration)
+    const threeDaysFromExpiration = new Date(subscription.expirationDate);
+    threeDaysFromExpiration.setDate(threeDaysFromExpiration.getDate() - 3);
+    
+    if (new Date() > threeDaysFromExpiration) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Plan can only be changed at least 3 days before expiration' 
+      });
+    }
+    
+    // Update subscription plan
+    subscription.plan = plan;
+    subscription.price = planDoc.price;
+    
+    // Update payment method if provided
+    if (paymentMethod) {
+      subscription.paymentMethod = paymentMethod;
+    }
+    
+    // Update payment details if provided
+    if (paymentDetails) {
+      subscription.paymentDetails = paymentDetails;
+    }
+    
+    await subscription.save();
+    
+    // Update session
+    req.session.user.plan = plan;
+    await req.session.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Plan updated successfully'
+    });
+    
+  } catch (error) {
+    console.error('Plan change error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to change plan' 
+    });
+  }
+});
+
+app.get('/api/user/subscription', async (req, res) => {
+  try {
+    if (!req.session.user?.id) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const subscription = await Subscription.findOne({
+      userId: req.session.user.id,
+      status: 'Active'
+    });
+
+    if (!subscription) {
+      return res.json({ success: true, subscription: null });
+    }
+
+    res.json({ success: true, subscription });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
@@ -960,7 +1332,7 @@ app.get('/favorites', servePage('favorites'));
 app.get('/login', servePage('login'));
 app.get('/mainpage', servePage('mainpage'));
 app.get('/register', servePage('register'));
-app.get('/account', servePage('account'));
+app.get('/account', requireAuth, servePage('account'));
 app.get('/manage-profiles', servePage('manage-profiles'));
 app.get('/payment-method', servePage('payment-method'));
 app.get('/profiles', servePage('profiles'));
@@ -994,19 +1366,19 @@ async function initializePlans() {
   const defaultPlans = [
     { 
       name: 'Basic', 
-      price: 199,
+      price: 199,  // PHP price
       resolution: '720p',
       maxProfiles: 1
     },
     { 
       name: 'Standard', 
-      price: 399,
+      price: 399,  // PHP price
       resolution: '1080p',
       maxProfiles: 3
     },
     { 
       name: 'Premium', 
-      price: 549,
+      price: 549,  // PHP price
       resolution: '4K+HDR',
       maxProfiles: 5
     }

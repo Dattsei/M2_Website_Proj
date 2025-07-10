@@ -53,8 +53,10 @@ const profileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Content' 
   }]
-}, { _id: false }); // No separate IDs for profiles
-
+}, { 
+  _id: true,  // Enable automatic ID generation
+  timestamps: true 
+});
 // Main user schema
 const userSchema = new mongoose.Schema({
   name: { 
@@ -177,6 +179,19 @@ userSchema.methods.canAddProfile = async function() {
   if (!plan) return false;
   
   return this.profiles.length < plan.maxProfiles;
+};
+
+userSchema.methods.updateProfile = async function(profileId, update) {
+  const profile = this.profiles.id(profileId);
+  if (!profile) throw new Error('Profile not found');
+  
+  Object.assign(profile, update);
+  return this.save();
+};
+
+userSchema.methods.deleteProfile = async function(profileId) {
+  this.profiles = this.profiles.filter(p => p._id.toString() !== profileId);
+  return this.save();
 };
 
 const User = mongoose.model('User', userSchema);

@@ -44,4 +44,19 @@ subscriptionSchema.index({ 'paymentDetails.identifier': 1 });
 // Add index for expiration and status
 subscriptionSchema.index({ expirationDate: 1, status: 1 });
 
+// Add virtual field for active status
+subscriptionSchema.virtual('isActive').get(function() {
+  return this.status === 'Active' && this.expirationDate > Date.now();
+});
+
+// Add toJSON transform to include virtuals
+subscriptionSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
+
 module.exports = mongoose.model('Subscription', subscriptionSchema);
