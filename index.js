@@ -421,6 +421,50 @@ app.put('/api/user/password', async (req, res) => {
   }
 });
 
+async function saveSelectedPlan() {
+  if (!selectedPlan) {
+    alert("Please select a plan.");
+    return;
+  }
+
+  if (currentPlan === selectedPlan) {
+    alert("You're already on this plan.");
+    return;
+  }
+
+  showLoader();
+  try {
+    // Get plan details using the new endpoint
+    const planRes = await fetch(`/api/plans/${selectedPlan}`);
+    
+    if (!planRes.ok) {
+      const error = await planRes.json();
+      throw new Error(error.message || 'Failed to fetch plan details');
+    }
+    
+    const planData = await planRes.json();
+    const maxProfiles = planData.plan.maxProfiles || 1;
+
+    // Get user profiles
+    const userRes = await fetch('/api/user');
+    const userData = await userRes.json();
+    
+    // Check profile limits
+    if (userData.profiles.length > maxProfiles) {
+      showProfileSelection(userData.profiles, maxProfiles);
+      return;
+    }
+
+    // Update the plan
+    await updateSubscriptionPlan(selectedPlan);
+  } catch (error) {
+    console.error('Error changing plan:', error);
+    alert(`Error: ${error.message || "An error occurred while changing the plan."}`);
+  } finally {
+    hideLoader();
+  }
+}
+
 // ======================
 // ACCOUNT DATA ENDPOINT
 // ======================
@@ -592,14 +636,13 @@ app.delete('/api/profiles/:id', async (req, res) => {
     }
 
     const user = await User.findById(userId);
-    const profileIndex = user.profiles.findIndex(p => p._id.toString() === profileId);
     
-    // Find profile by ID
-    const profile = user.profiles.find(
+    // Find profile index using string comparison
+    const profileIndex = user.profiles.findIndex(
       p => p._id.toString() === profileId
     );
     
-    if (!profile) {
+    if (profileIndex === -1) {
       return res.status(400).json({ 
         success: false, 
         message: 'Profile not found' 
@@ -648,10 +691,18 @@ app.delete('/api/profiles/:id', async (req, res) => {
 app.put('/api/profiles', async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const { profileId, name, avatar } = req.body;  // Now using profileId
+    const { profileId, name, avatar } = req.body;
     
+    // Add validation for profileId
+    if (!mongoose.Types.ObjectId.isValid(profileId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid profile ID format'
+      });
+    }
+
     const user = await User.findById(userId);
-    const profile = user.profiles.id(profileId);  // Mongoose subdocument lookup
+    const profile = user.profiles.id(profileId);
     
     if (!profile) {
       return res.status(400).json({ 
@@ -999,7 +1050,6 @@ app.delete('/api/subscription', async (req, res) => {
   try {
     const userId = req.session.user.id;
     
-    // Find active subscription
     const subscription = await Subscription.findOne({ 
       userId, 
       status: 'Active'
@@ -1012,18 +1062,19 @@ app.delete('/api/subscription', async (req, res) => {
       });
     }
     
-    // Check if subscription is at least 3 days old
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    // Calculate days since subscription started
+    const today = new Date();
+    const daysSinceStart = Math.floor((today - subscription.dateSubscribed) / (1000 * 60 * 60 * 24));
     
-    if (subscription.dateSubscribed > threeDaysAgo) {
+    // Allow cancellation after 30 days
+    if (daysSinceStart < 30) {
+      const remainingDays = 30 - daysSinceStart;
       return res.status(400).json({ 
         success: false, 
-        message: 'You can only cancel after 3 days of subscription' 
+        message: `You can only cancel after ${remainingDays} days of subscription` 
       });
     }
     
-    // Mark as cancelled
     subscription.status = 'Cancelled';
     await subscription.save();
     
@@ -1162,10 +1213,10 @@ app.post('/api/subscription/change-plan', async (req, res) => {
     const threeDaysFromExpiration = new Date(subscription.expirationDate);
     threeDaysFromExpiration.setDate(threeDaysFromExpiration.getDate() - 3);
     
-    if (new Date() > threeDaysFromExpiration) {
+    if (new Date() < subscription.expirationDate) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Plan can only be changed at least 3 days before expiration' 
+        message: 'You can only cancel after your subscription expires' 
       });
     }
     

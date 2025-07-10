@@ -85,10 +85,8 @@ async function addNewProfile() {
 
 async function deleteProfile(profileId) {
   try {
-    const response = await fetch('/api/profiles', {
-      method: 'DELETE',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ profileId })  // Send profile ID
+    const response = await fetch(`/api/profiles/${profileId}`, {
+      method: 'DELETE'
     });
 
     const data = await response.json();

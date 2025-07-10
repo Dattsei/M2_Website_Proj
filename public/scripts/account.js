@@ -167,8 +167,8 @@ function renderProfiles(profiles) {
            onclick="updateProfileAvatar('${profile._id}')">
       <span>${profile.name}</span>
       <div>
-        <button onclick="editProfile('${profile.id}')">Edit</button>
-        <button onclick="deleteProfile('${profile.id}')">Delete</button>
+        <button onclick="editProfile('${profile._id}')">Edit</button>
+        <button onclick="deleteProfile('${profile._id}')">Delete</button>
       </div>
     `;
     container.appendChild(div);
@@ -353,27 +353,16 @@ async function saveSelectedPlan() {
     return;
   }
 
-  // Prevent changing to the same plan
   if (currentPlan === selectedPlan) {
     alert("You're already on this plan.");
     return;
   }
 
-  // Only allow changes when subscription is expired
-  if (currentSubscription) {
-    const expirationDate = new Date(currentSubscription.expirationDate);
-    const today = new Date();
-    
-    if (expirationDate > today) {
-      alert(`You can only change plans after your current subscription expires in ${Math.ceil((expirationDate - today) / (1000 * 60 * 60 * 24))} days.`);
-      return;
-    }
-  }
-
   showLoader();
   try {
-    // Get plan details
+    // Get plan details using the new endpoint
     const planRes = await fetch(`/api/plans/${selectedPlan}`);
+    
     if (!planRes.ok) {
       const error = await planRes.json();
       throw new Error(error.message || 'Failed to fetch plan details');
@@ -384,21 +373,15 @@ async function saveSelectedPlan() {
 
     // Get user profiles
     const userRes = await fetch('/api/user');
-    if (!userRes.ok) {
-      const error = await userRes.json();
-      throw new Error(error.message || 'Failed to fetch user data');
-    }
-    
     const userData = await userRes.json();
-    const currentProfiles = userData.profiles || [];
     
-    // Check if downgrading and have more profiles than allowed
-    if (selectedPlan !== currentPlan && currentProfiles.length > maxProfiles) {
-      showProfileSelection(currentProfiles, maxProfiles);
+    // Check profile limits
+    if (userData.profiles.length > maxProfiles) {
+      showProfileSelection(userData.profiles, maxProfiles);
       return;
     }
 
-    // If not downgrading or within limits, update plan directly
+    // Update the plan
     await updateSubscriptionPlan(selectedPlan);
   } catch (error) {
     console.error('Error changing plan:', error);
@@ -407,6 +390,7 @@ async function saveSelectedPlan() {
     hideLoader();
   }
 }
+
 
 async function showProfileSelection(profiles, maxAllowed) {
   const container = document.getElementById("profileSelectionList");
@@ -708,7 +692,10 @@ async function editProfile(profileId) {
     const response = await fetch('/api/profiles', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profileId, name: newName })
+      body: JSON.stringify({ 
+        profileId: profileId, 
+        name: newName 
+      })
     });
     
     if (!response.ok) {
@@ -733,7 +720,6 @@ async function deleteProfile(profileId) {
   
   showLoader();
   try {
-    // Updated to use URL parameter instead of request body
     const response = await fetch(`/api/profiles/${profileId}`, {
       method: 'DELETE'
     });
@@ -754,7 +740,7 @@ async function deleteProfile(profileId) {
 
 // Cancel subscription
 async function cancelSubscription() {
-  if (!confirm('Are you sure? You will lose access at the end of your billing period.')) return;
+  if (!confirm('Are you sure? You can only cancel after your 30-day subscription period has ended.')) return;
   
   showLoader();
   try {
